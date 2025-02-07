@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:SkelAppliences"
-             x:Class="SkelAppliences.MainPage">
+             x:Class="SkelAppliences.MainPage"
+             
+             BackgroundColor="Black">
 
     <ScrollView>
         <Grid RowDefinitions="*, Auto">
@@ -13,7 +15,7 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Padding="10" Margin="5">
-                            <Label Text="{Binding Text}" TextColor="BlueViolet" />
+                            <Label Text="{Binding Text}" TextColor="White" />
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
