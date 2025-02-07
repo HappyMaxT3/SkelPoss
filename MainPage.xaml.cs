@@ -1,25 +1,41 @@
-﻿namespace SkelAppliences
+﻿using System.Collections.ObjectModel;
+
+namespace SkelAppliences;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    public ObservableCollection<Message> Messages { get; set; } = new();
+
+    public MainPage()
     {
-        int count = 0;
+        InitializeComponent();
+        BindingContext = this;
+    }
 
-        public MainPage()
+    private void SendMessage_Clicked(object sender, EventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(MessageEntry.Text))
         {
-            InitializeComponent();
-        }
-
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+            Messages.Add(new Message { Text = MessageEntry.Text });
+            MessageEntry.Text = "";
         }
     }
 
+    private void RecordVoice_Clicked(object sender, EventArgs e)
+    {
+        Messages.Add(new Message { Text = "🎤 Голосовое сообщение записано!" });
+    }
+
+    private void OnSwiped(object sender, SwipedEventArgs e)
+    {
+        if (e.Direction == SwipeDirection.Right)
+        {
+            Shell.Current.FlyoutIsPresented = true;
+        }
+    }
+}
+
+public class Message
+{
+    public string Text { get; set; } = string.Empty;
 }
