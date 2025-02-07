@@ -1,29 +1,30 @@
-﻿using System.Collections.ObjectModel;
+﻿using SkelAppliences.ViewModels;
 
 namespace SkelAppliences;
 
 public partial class MainPage : ContentPage
 {
-    public ObservableCollection<Message> Messages { get; set; } = new();
+    public MainViewModel ViewModel { get; set; }
 
     public MainPage()
     {
         InitializeComponent();
-        BindingContext = this;
+        ViewModel = new MainViewModel();
+        BindingContext = ViewModel;
     }
 
     private void SendMessage_Clicked(object sender, EventArgs e)
     {
         if (!string.IsNullOrWhiteSpace(MessageEntry.Text))
         {
-            Messages.Add(new Message { Text = MessageEntry.Text });
+            ViewModel.SendMessage();
             MessageEntry.Text = "";
         }
     }
 
     private void RecordVoice_Clicked(object sender, EventArgs e)
     {
-        Messages.Add(new Message { Text = "🎤 Голосовое сообщение записано!" });
+        ViewModel.RecordVoice();
     }
 
     private void OnSwiped(object sender, SwipedEventArgs e)
@@ -33,9 +34,4 @@ public partial class MainPage : ContentPage
             Shell.Current.FlyoutIsPresented = true;
         }
     }
-}
-
-public class Message
-{
-    public string Text { get; set; } = string.Empty;
 }
