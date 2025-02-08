@@ -7,9 +7,14 @@
     Shell.FlyoutBehavior="Flyout"
     Title="SkelAppliences">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <!-- Главное окно (Чат) -->
+    <FlyoutItem Title="Чат">
+        <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
+
+    <!-- Новостное меню -->
+    <FlyoutItem Title="Новости">
+        <ShellContent ContentTemplate="{DataTemplate local:NewsPage}" />
+    </FlyoutItem>
 
 </Shell>
