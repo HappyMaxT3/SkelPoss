@@ -26,12 +26,19 @@ namespace SkelAppliences.ViewModels
                 Messages.Add(new Message { Text = MessageText });
                 MessageText = "";
                 OnPropertyChanged(nameof(MessageText));
+
+                Messages.Add(new Message { Text = "✅ Сообщение принято! Это ответ." });
             }
         }
 
         public void RecordVoice()
         {
-            Messages.Add(new Message { Text = "🎤 Голосовое сообщение записано!" });
+            Messages.Add(new Message { Text = "🎤 Голосовое сообщение записано (расшифровка)!" });
+
+            MessageText = "";
+            OnPropertyChanged(nameof(MessageText));
+
+            Messages.Add(new Message { Text = "✅ Голосовое сообщение принято! Это ответ." });
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
