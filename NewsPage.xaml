@@ -6,7 +6,7 @@
     
     <ScrollView>
         <StackLayout Padding="10">
-            <Label Text="Новости" FontSize="24" FontAttributes="Bold" />
+            <Label Text="Новости" FontSize="24" FontAttributes="Bold" TextColor="White" />
             <Label Text="📢 Последние новости о технике..." TextColor="White" />
             <!-- Здесь API с новостями -->
 
