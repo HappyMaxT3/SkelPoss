@@ -51,5 +51,10 @@ namespace SkelAppliences.ViewModels
     public class Message
     {
         public string Text { get; set; } = string.Empty;
+
+        public bool IsProduct { get; set; }
+        public string ProductName { get; set; } 
+        public string ProductDetails { get; set; } 
+        public string ProductImage { get; set; }
     }
 }
