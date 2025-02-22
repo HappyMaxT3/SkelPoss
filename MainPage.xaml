@@ -52,9 +52,15 @@
             <!-- Поле ввода + кнопки -->
             <Grid Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
                 <Entry x:Name="MessageEntry" Placeholder="Введите сообщение..." 
-                       TextColor="White" Text="{Binding MessageText, Mode=TwoWay}" />
-                <Button Text="📩" Clicked="SendMessage_Clicked" Grid.Column="1" />
-                <Button Text="🎙" Clicked="RecordVoice_Clicked" Grid.Column="2" />
+           TextColor="White" Text="{Binding MessageText, Mode=TwoWay}" />
+
+                <Button Text="->" Clicked="SendMessage_Clicked" Grid.Column="1"
+            BackgroundColor="#343434" TextColor="White"
+            CornerRadius="36" WidthRequest="50" HeightRequest="50"/>
+
+                <Button Text="🎙" Clicked="RecordVoice_Clicked" Grid.Column="2"
+            BackgroundColor="#343434" TextColor="White"
+            CornerRadius="36" WidthRequest="50" HeightRequest="50"/>
             </Grid>
 
         </Grid>
