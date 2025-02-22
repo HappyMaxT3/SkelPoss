@@ -4,7 +4,7 @@
              xmlns:converters="clr-namespace:SkelAppliences.Converters"
              x:DataType="local:MainViewModel"
              x:Class="SkelAppliences.MainPage"
-             BackgroundColor="Black">
+             BackgroundColor="#1B1818">
 
     <!-- Ресурсы страницы -->
     <ContentPage.Resources>
@@ -20,19 +20,22 @@
                     <DataTemplate x:DataType="local:Message">
                         <Grid RowDefinitions="Auto, Auto" Margin="5">
 
-                            <!-- Обычное сообщение -->
-                            <Border Padding="10" BackgroundColor="Gray" 
-                                    IsVisible="{Binding IsProduct, Converter={x:Static converters:InverseBoolConverter.Instance}}">
+                            <!-- Сообщение пользователя (справа) -->
+                            <Border 
+                                Padding="10" 
+                                BackgroundColor="#4CAF50" 
+                                HorizontalOptions="End"
+                                IsVisible="{Binding IsUserMessage}">
                                 <Label Text="{Binding Text}" TextColor="White" />
                             </Border>
 
-                            <!-- Продуктовое сообщение -->
-                            <Border Padding="10" BackgroundColor="DarkGray" IsVisible="{Binding IsProduct}">
-                                <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *">
-                                    <!--<Image Source="{Binding ProductImage}" WidthRequest="50" HeightRequest="50" Grid.RowSpan="2" /> -->
-                                    <Label Text="{Binding ProductName}" FontAttributes="Bold" TextColor="White" Grid.Column="1" />
-                                    <Label Text="{Binding ProductDetails}" TextColor="White" Grid.Row="1" Grid.Column="1" />
-                                </Grid>
+                            <!-- Ответное сообщение от модели (слева) -->
+                            <Border 
+                                Padding="10" 
+                                BackgroundColor="Gray" 
+                                HorizontalOptions="Start"
+                                IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}">
+                                <Label Text="{Binding Text}" TextColor="White" />
                             </Border>
 
                         </Grid>
@@ -43,18 +46,17 @@
                 <CollectionView.GestureRecognizers>
                     <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped" />
                 </CollectionView.GestureRecognizers>
+                
             </CollectionView>
 
             <!-- Поле ввода + кнопки -->
             <Grid Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
                 <Entry x:Name="MessageEntry" Placeholder="Введите сообщение..." 
                        TextColor="White" Text="{Binding MessageText, Mode=TwoWay}" />
-
                 <Button Text="📩" Clicked="SendMessage_Clicked" Grid.Column="1" />
                 <Button Text="🎙" Clicked="RecordVoice_Clicked" Grid.Column="2" />
             </Grid>
 
         </Grid>
     </ScrollView>
-
 </ContentPage>
