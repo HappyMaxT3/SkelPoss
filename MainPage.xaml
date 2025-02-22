@@ -23,7 +23,7 @@
                             <!-- Сообщение пользователя (справа) -->
                             <Border 
                                 Padding="10" 
-                                BackgroundColor="#4CAF50" 
+                                BackgroundColor="#343434" 
                                 HorizontalOptions="End"
                                 IsVisible="{Binding IsUserMessage}">
                                 <Label Text="{Binding Text}" TextColor="White" />
@@ -32,7 +32,7 @@
                             <!-- Ответное сообщение от модели (слева) -->
                             <Border 
                                 Padding="10" 
-                                BackgroundColor="Gray" 
+                                BackgroundColor="#949494" 
                                 HorizontalOptions="Start"
                                 IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}">
                                 <Label Text="{Binding Text}" TextColor="White" />

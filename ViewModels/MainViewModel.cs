@@ -55,7 +55,7 @@ namespace SkelAppliences.ViewModels
     public class Message
     {
         public string Text { get; set; } = string.Empty;
-        public bool IsUserMessage { get; set; } // true, если сообщение от пользователя
+        public bool IsUserMessage { get; set; } 
         public bool IsProduct { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public string ProductDetails { get; set; } = string.Empty;
