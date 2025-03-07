@@ -4,7 +4,7 @@
              x:Class="SkelAppliences.NewsPage"
              BackgroundColor="#1B1818">
 
-    <ScrollView>
+    <ScrollView x:Name="MainScroll">
         <StackLayout Padding="10">
             <!-- Жесты свайпа для всей области -->
             <StackLayout.GestureRecognizers>

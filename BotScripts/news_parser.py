@@ -30,7 +30,7 @@ def parse_tech_news():
                 link_elem = title_elem['href'] if title_elem else None
                 
                 title = normalize('NFC', title_elem.text.strip()) if title_elem else "Без заголовка"
-                content = normalize('NFC', content_elem.text.strip()[:400] + '...') if content_elem else "Нет содержимого"
+                content = normalize('NFC', content_elem.text.strip()[:256] + '...') if content_elem else "Нет содержимого"
                 full_url = urljoin(base_url, link_elem) if link_elem else "#"
                 
                 news_items.append({
