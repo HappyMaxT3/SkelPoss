@@ -1,13 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Newtonsoft.Json;
-using System.Runtime.Versioning;
+using System.Text;
+using System.Net;
+using Microsoft.Maui.Controls;
 
 namespace SkelAppliences
 {
     public partial class NewsPage : ContentPage
     {
-        public ObservableCollection<NewsItem> NewsItems { get; } = new ObservableCollection<NewsItem>();
+        public ObservableCollection<NewsItem> NewsItems { get; } = new();
 
         public NewsPage()
         {
@@ -19,99 +21,134 @@ namespace SkelAppliences
         {
             try
             {
-                // Показываем индикатор загрузки (только если поддерживается)
                 SetLoadingIndicator(true);
 
-                var pythonPath = "python.exe";
-                var scriptPath = @"C:\\Users\\user\\Desktop\\ucheba\\2_kurs\\SkelAppliances\\BotScripts\\news_parser.py";
+                var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                var scriptPath = Path.Combine(baseDirectory, "BotScripts", "news_parser.py");
+
+                if (!File.Exists(scriptPath))
+                {
+                    await DisplayAlert("Ошибка", $"Файл скрипта не найден:\n{scriptPath}", "OK");
+                    return;
+                }
 
                 var process = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName = pythonPath,
-                        Arguments = scriptPath,
+                        FileName = "python.exe",
+                        Arguments = $"\"{scriptPath}\"",
                         RedirectStandardOutput = true,
+                        RedirectStandardError = true,
                         UseShellExecute = false,
-                        CreateNoWindow = true
+                        CreateNoWindow = true,
+                        StandardOutputEncoding = Encoding.UTF8,
+                        StandardErrorEncoding = Encoding.UTF8,
+                        WorkingDirectory = Path.GetDirectoryName(scriptPath)
                     }
                 };
 
                 process.Start();
                 var jsonOutput = await process.StandardOutput.ReadToEndAsync();
-                File.WriteAllText("debug_output.json", jsonOutput);
-                process.WaitForExit();
+                var errorOutput = await process.StandardError.ReadToEndAsync();
+                await process.WaitForExitAsync();
 
-                Console.WriteLine(jsonOutput);
+                jsonOutput = jsonOutput.Trim('\uFEFF');
+                jsonOutput = WebUtility.HtmlDecode(jsonOutput);
 
-                if (string.IsNullOrWhiteSpace(jsonOutput))
+                if (!string.IsNullOrEmpty(errorOutput))
                 {
-                    await DisplayAlert("Ошибка", "Сервер не вернул данные.", "OK");
+                    await DisplayAlert("Python Error", errorOutput, "OK");
                     return;
                 }
 
-                // Десериализация JSON в список новостей
-                var news = JsonConvert.DeserializeObject<List<NewsItem>>(jsonOutput);
+                if (string.IsNullOrWhiteSpace(jsonOutput))
+                {
+                    await DisplayAlert("Error", "No data received", "OK");
+                    return;
+                }
+
+                var news = JsonConvert.DeserializeObject<List<NewsItem>>(jsonOutput)
+                    ?? new List<NewsItem>();
 
                 Dispatcher.Dispatch(() =>
                 {
-                    NewsItems.Clear();
+                    NewsContainer.Children.Clear();
                     foreach (var item in news)
                     {
-                        AddNewsItem(item.Title, item.Content);
+                        AddNewsItem(item.Title, item.Content, item.Url);
                     }
                 });
-
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", $"Не удалось загрузить новости: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"Ошибка: {ex.Message}", "OK");
             }
             finally
             {
-                // Скрываем индикатор загрузки (только если поддерживается)
                 SetLoadingIndicator(false);
             }
         }
 
-        [SupportedOSPlatform("android21.0")]
         private void SetLoadingIndicator(bool isLoading)
         {
-            if (OperatingSystem.IsAndroidVersionAtLeast(21))
-            {
-                LoadingIndicator.IsVisible = isLoading;
-                LoadingIndicator.IsRunning = isLoading;
-            }
+            LoadingIndicator.IsVisible = isLoading;
+            LoadingIndicator.IsRunning = isLoading;
         }
 
-        private void AddNewsItem(string title, string content)
+        private void AddNewsItem(string title, string content, string url)
         {
+            var stackLayout = new StackLayout();
+
+            stackLayout.Children.Add(new Label
+            {
+                Text = title,
+                FontSize = 18,
+                FontAttributes = FontAttributes.Bold,
+                TextColor = Colors.White
+            });
+
+            stackLayout.Children.Add(new Label
+            {
+                Text = content,
+                FontSize = 14,
+                TextColor = Color.FromArgb("#CCCCCC"),
+                Margin = new Thickness(0, 5)
+            });
+
+            var readMoreLabel = new Label
+            {
+                Text = "Читать статью...",
+                FontSize = 14,
+                TextColor = Colors.Blue,
+                TextDecorations = TextDecorations.Underline,
+                HorizontalOptions = LayoutOptions.End
+            };
+
+            readMoreLabel.GestureRecognizers.Add(new TapGestureRecognizer
+            {
+                Command = new Command(async () =>
+                {
+                    try
+                    {
+                        await Launcher.OpenAsync(new Uri(url));
+                    }
+                    catch
+                    {
+                        await DisplayAlert("Ошибка", "Не удалось открыть статью", "OK");
+                    }
+                })
+            });
+
+            stackLayout.Children.Add(readMoreLabel);
+
             var frame = new Frame
             {
                 BackgroundColor = Color.FromArgb("#2D2D2D"),
                 Padding = 10,
                 Margin = new Thickness(0, 5),
                 CornerRadius = 10,
-                Content = new StackLayout
-                {
-                    Children =
-                    {
-                        new Label
-                        {
-                            Text = title,
-                            FontSize = 18,
-                            FontAttributes = FontAttributes.Bold,
-                            TextColor = Colors.White
-                        },
-                        new Label
-                        {
-                            Text = content,
-                            FontSize = 14,
-                            TextColor = Color.FromArgb("#CCCCCC"),
-                            Margin = new Thickness(0, 5)
-                        }
-                    }
-                }
+                Content = stackLayout
             };
 
             NewsContainer.Children.Add(frame);
@@ -119,13 +156,17 @@ namespace SkelAppliences
 
         private void OnSwiped(object sender, SwipedEventArgs e)
         {
-            LoadNews();
+            if (e.Direction == SwipeDirection.Right)
+            {
+                LoadNews(); 
+            }
         }
     }
 
     public class NewsItem
     {
-        public required string Title { get; set; }
-        public required string Content { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
     }
 }
