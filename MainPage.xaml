@@ -25,6 +25,8 @@
                                 Padding="10" 
                                 BackgroundColor="#343434" 
                                 HorizontalOptions="End"
+                                StrokeShape="RoundRectangle 15"
+                                StrokeThickness="0"
                                 IsVisible="{Binding IsUserMessage}">
                                 <Label Text="{Binding Text}" TextColor="White" />
                             </Border>
@@ -32,8 +34,10 @@
                             <!-- Ответное сообщение от модели (слева) -->
                             <Border 
                                 Padding="10" 
-                                BackgroundColor="#949494" 
+                                BackgroundColor="#343434" 
                                 HorizontalOptions="Start"
+                                StrokeShape="RoundRectangle 15"
+                                StrokeThickness="0"
                                 IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}">
                                 <Label Text="{Binding Text}" TextColor="White" />
                             </Border>

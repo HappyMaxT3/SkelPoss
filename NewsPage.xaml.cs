@@ -119,7 +119,7 @@ namespace SkelAppliences
                             Text = item.Content,
                             FontSize = 14,
                             TextColor = Color.FromArgb("#CCCCCC"),
-                            MaxLines = 3
+                            MaxLines = 8
                         },
                         new Button
                         {
