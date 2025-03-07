@@ -3,6 +3,9 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Text;
 using System.Net;
+using Microsoft.Maui.Controls;
+using AngleSharp.Html.Parser;
+using System.Net.Http;
 
 namespace SkelAppliences
 {
@@ -13,24 +16,44 @@ namespace SkelAppliences
         private List<NewsItem> _allNews = new();
         private bool _isLoadingMore;
         private bool _isInitialLoading = true;
+        private HttpClient _httpClient;
 
         public NewsPage()
         {
             InitializeComponent();
-            SetupGestures();
+            InitializeHttpClient();
+            SetupScrollListener();
             LoadInitialNews();
         }
 
-        private void SetupGestures()
+        private void InitializeHttpClient()
         {
-            var swipeDown = new SwipeGestureRecognizer { Direction = SwipeDirection.Down };
-            swipeDown.Swiped += OnSwiped;
-            var swipeRight = new SwipeGestureRecognizer { Direction = SwipeDirection.Right };
-            swipeRight.Swiped += OnSwiped;
-            NewsContainer.GestureRecognizers.Add(swipeDown);
-            NewsContainer.GestureRecognizers.Add(swipeRight);
+            var handler = new HttpClientHandler();
+#if ANDROID
+            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
+#endif
+            _httpClient = new HttpClient(handler);
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; MyNewsApp/1.0)");
+            _httpClient.Timeout = TimeSpan.FromSeconds(15);
+        }
 
-            MainScroll.Scrolled += OnScroll;
+        private void SetupScrollListener()
+        {
+            MainScroll.Scrolled += async (sender, e) =>
+            {
+                if (_isInitialLoading || _isLoadingMore) return;
+
+                var scrollView = (ScrollView)sender;
+                var scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
+
+                if (scrollingSpace <= scrollView.ScrollY + 100)
+                {
+                    _isLoadingMore = true;
+                    await Task.Delay(300);
+                    DisplayNewsPage();
+                    _isLoadingMore = false;
+                }
+            };
         }
 
         private async void LoadInitialNews()
@@ -38,12 +61,12 @@ namespace SkelAppliences
             try
             {
                 SetLoadingIndicator(true);
-                await LoadNewsData();
+                _allNews = await ParseNews();
                 DisplayNewsPage();
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Ошибка: {ex.Message}", "OK");
+                await DisplayAlert("Ошибка", ex.Message, "OK");
             }
             finally
             {
@@ -52,33 +75,44 @@ namespace SkelAppliences
             }
         }
 
-        private async Task LoadNewsData()
+        private async Task<List<NewsItem>> ParseNews()
         {
-            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            var scriptPath = Path.Combine(baseDir, "BotScripts", "news_parser.py");
+            var news = new List<NewsItem>();
 
-            using var process = new Process
+            try
             {
-                StartInfo = new ProcessStartInfo
+                var response = await _httpClient.GetAsync("https://habr.com/ru/flows/develop/");
+                response.EnsureSuccessStatusCode();
+
+                var html = await response.Content.ReadAsStringAsync();
+                var parser = new HtmlParser();
+                var document = await parser.ParseDocumentAsync(html);
+
+                foreach (var article in document.QuerySelectorAll("article.tm-articles-list__item"))
                 {
-                    FileName = "python.exe",
-                    Arguments = $"\"{scriptPath}\"",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    StandardOutputEncoding = Encoding.UTF8,
+                    var titleElem = article.QuerySelector("h2.tm-title a");
+                    var contentElem = article.QuerySelector("div.tm-article-body");
+                    var linkElem = titleElem?.GetAttribute("href");
+
+                    var title = titleElem?.TextContent.Trim() ?? "Без заголовка";
+                    var content = contentElem?.TextContent.Trim() ?? "Нет содержимого";
+                    var url = linkElem != null ? new Uri(new Uri("https://habr.com"), linkElem).ToString() : "#";
+
+                    news.Add(new NewsItem
+                    {
+                        Title = title,
+                        Content = content.Length > 256 ? content[..256] + "..." : content,
+                        Url = url
+                    });
                 }
-            };
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Ошибка парсинга: {ex}");
+                throw;
+            }
 
-            process.Start();
-            var jsonOutput = await process.StandardOutput.ReadToEndAsync();
-            var errorOutput = await process.StandardError.ReadToEndAsync();
-            await process.WaitForExitAsync();
-
-            if (!string.IsNullOrEmpty(errorOutput))
-                throw new Exception($"Python error: {errorOutput}");
-
-            _allNews = JsonConvert.DeserializeObject<List<NewsItem>>(jsonOutput) ?? new();
+            return news;
         }
 
         private void DisplayNewsPage()
@@ -86,27 +120,14 @@ namespace SkelAppliences
             var start = _currentPage * PageSize;
             var end = Math.Min(start + PageSize, _allNews.Count);
 
-            for (var i = start; i < end; i++)
+            Dispatcher.Dispatch(() =>
             {
-                AddNewsItem(_allNews[i]);
-            }
-            _currentPage++;
-        }
-
-        private async void OnScroll(object sender, ScrolledEventArgs e)
-        {
-            if (_isInitialLoading || _isLoadingMore) return;
-
-            var scrollView = (ScrollView)sender;
-            var scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
-
-            if (scrollingSpace <= scrollView.ScrollY + 100)
-            {
-                _isLoadingMore = true;
-                await Task.Delay(300);
-                DisplayNewsPage();
-                _isLoadingMore = false;
-            }
+                for (var i = start; i < end; i++)
+                {
+                    AddNewsItem(_allNews[i]);
+                }
+                _currentPage++;
+            });
         }
 
         private void AddNewsItem(NewsItem item)
@@ -147,7 +168,7 @@ namespace SkelAppliences
         {
             return new Button
             {
-                Text = "Читать далее",
+                Text = "Читать далее →",
                 TextColor = Colors.White,
                 BackgroundColor = Color.FromArgb("#4A90E2"),
                 CornerRadius = 5,
@@ -171,8 +192,11 @@ namespace SkelAppliences
 
         private void SetLoadingIndicator(bool isLoading)
         {
-            LoadingIndicator.IsVisible = isLoading;
-            LoadingIndicator.IsRunning = isLoading;
+            Dispatcher.Dispatch(() =>
+            {
+                LoadingIndicator.IsVisible = isLoading;
+                LoadingIndicator.IsRunning = isLoading;
+            });
         }
 
         private void OnSwiped(object? sender, SwipedEventArgs e)
@@ -190,11 +214,18 @@ namespace SkelAppliences
 
         private async void RefreshNews()
         {
-            _currentPage = 0;
-            _allNews.Clear();
-            NewsContainer.Children.Clear();
-            await LoadNewsData();
-            DisplayNewsPage();
+            try
+            {
+                _currentPage = 0;
+                _allNews.Clear();
+                NewsContainer.Children.Clear();
+                _allNews = await ParseNews();
+                DisplayNewsPage();
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", ex.Message, "OK");
+            }
         }
 
         private void OpenSideMenu()
