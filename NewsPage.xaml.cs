@@ -15,6 +15,16 @@ namespace SkelAppliences
         {
             InitializeComponent();
             LoadNews();
+
+            // Добавляем жесты свайпа
+            var swipeDown = new SwipeGestureRecognizer { Direction = SwipeDirection.Down };
+            swipeDown.Swiped += OnSwiped;
+
+            var swipeRight = new SwipeGestureRecognizer { Direction = SwipeDirection.Right };
+            swipeRight.Swiped += OnSwiped;
+
+            NewsContainer.GestureRecognizers.Add(swipeDown);
+            NewsContainer.GestureRecognizers.Add(swipeRight);
         }
 
         private async void LoadNews()
@@ -153,12 +163,18 @@ namespace SkelAppliences
 
             NewsContainer.Children.Add(frame);
         }
-
-        private void OnSwiped(object sender, SwipedEventArgs e)
+        private void OnSwiped(object? sender, SwipedEventArgs e)
         {
-            if (e.Direction == SwipeDirection.Right)
+            switch (e.Direction)
             {
-                LoadNews(); 
+                case SwipeDirection.Down:
+                    LoadNews();
+                    break;
+
+                case SwipeDirection.Right:
+                    if (Shell.Current != null)
+                        Shell.Current.FlyoutIsPresented = true;
+                    break;
             }
         }
     }
