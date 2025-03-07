@@ -1,20 +1,42 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SkelAppliences.NewsPage"
-             
-             BackgroundColor="Black">
-    
-    <ScrollView>
-        <StackLayout Padding="10">
-            <Label Text="Новости" FontSize="24" FontAttributes="Bold" />
-            <Label Text="📢 Последние новости о технике..." TextColor="White" />
-            <!-- Здесь API с новостями -->
+             BackgroundColor="#1B1818">
 
+    <ScrollView x:Name="MainScroll">
+        <StackLayout Padding="10">
+            <!-- Жесты свайпа для всей области -->
             <StackLayout.GestureRecognizers>
+                <SwipeGestureRecognizer Direction="Down" Swiped="OnSwiped"/>
                 <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped"/>
             </StackLayout.GestureRecognizers>
+
+            <!-- Заголовок -->
+            <Label Text="Новости" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   TextColor="White" />
+
+            <Label Text="📢 Последние новости..." 
+                   TextColor="White" />
+
+            <!-- Индикатор загрузки -->
+        <ActivityIndicator x:Name="LoadingIndicator"
+                          IsVisible="False"
+                          IsRunning="False"
+                          Color="#4A90E2"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"
+                          HeightRequest="50"
+                          WidthRequest="50"/>
+
+            <!-- Контейнер для новостей -->
+            <StackLayout x:Name="NewsContainer" 
+                         Spacing="10"
+                         VerticalOptions="Start"/>
+
         </StackLayout>
-        
     </ScrollView>
-    
+
 </ContentPage>

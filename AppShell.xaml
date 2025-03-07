@@ -5,14 +5,26 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SkelAppliences"
     Shell.FlyoutBehavior="Flyout"
-    Title="SkelAppliences">
+    Title="SkelPoss"
+    FlyoutBackgroundColor="#343434"
+    BackgroundColor="#343434">
 
-    <!-- Главное окно (Чат) -->
+    <Shell.TitleView>
+        <Grid HorizontalOptions="FillAndExpand"
+              VerticalOptions="Center">
+            <Label Text="SKELPOSS"
+                   FontSize="20"
+                   TextColor="#949494"
+                   HorizontalOptions="Start"
+                   Margin="15,0,0,0"
+                   VerticalOptions="Center"/>
+        </Grid>
+    </Shell.TitleView>
+
     <FlyoutItem Title="Чат">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
 
-    <!-- Новостное меню -->
     <FlyoutItem Title="Новости">
         <ShellContent ContentTemplate="{DataTemplate local:NewsPage}" />
     </FlyoutItem>
