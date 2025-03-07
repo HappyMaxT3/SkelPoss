@@ -1,47 +1,29 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using Newtonsoft.Json;
-using System.Text;
-using System.Net;
-using Microsoft.Maui.Controls;
-using AngleSharp.Html.Parser;
-using System.Net.Http;
+﻿using Microsoft.Maui.Controls;
+using SkelAppliences.Services;
+using System.Collections.ObjectModel;
 
 namespace SkelAppliences
 {
     public partial class NewsPage : ContentPage
     {
-        private const int PageSize = 5;
+        private const int PageSize = 4;
         private int _currentPage = 0;
         private List<NewsItem> _allNews = new();
         private bool _isLoadingMore;
-        private bool _isInitialLoading = true;
-        private HttpClient _httpClient;
+        private readonly NewsParser _newsParser = new();
 
         public NewsPage()
         {
             InitializeComponent();
-            InitializeHttpClient();
             SetupScrollListener();
             LoadInitialNews();
-        }
-
-        private void InitializeHttpClient()
-        {
-            var handler = new HttpClientHandler();
-#if ANDROID
-            handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
-#endif
-            _httpClient = new HttpClient(handler);
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; MyNewsApp/1.0)");
-            _httpClient.Timeout = TimeSpan.FromSeconds(15);
         }
 
         private void SetupScrollListener()
         {
             MainScroll.Scrolled += async (sender, e) =>
             {
-                if (_isInitialLoading || _isLoadingMore) return;
+                if (_isLoadingMore) return;
 
                 var scrollView = (ScrollView)sender;
                 var scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
@@ -61,7 +43,7 @@ namespace SkelAppliences
             try
             {
                 SetLoadingIndicator(true);
-                _allNews = await ParseNews();
+                _allNews = await _newsParser.ParseNewsAsync();
                 DisplayNewsPage();
             }
             catch (Exception ex)
@@ -71,48 +53,7 @@ namespace SkelAppliences
             finally
             {
                 SetLoadingIndicator(false);
-                _isInitialLoading = false;
             }
-        }
-
-        private async Task<List<NewsItem>> ParseNews()
-        {
-            var news = new List<NewsItem>();
-
-            try
-            {
-                var response = await _httpClient.GetAsync("https://habr.com/ru/flows/develop/");
-                response.EnsureSuccessStatusCode();
-
-                var html = await response.Content.ReadAsStringAsync();
-                var parser = new HtmlParser();
-                var document = await parser.ParseDocumentAsync(html);
-
-                foreach (var article in document.QuerySelectorAll("article.tm-articles-list__item"))
-                {
-                    var titleElem = article.QuerySelector("h2.tm-title a");
-                    var contentElem = article.QuerySelector("div.tm-article-body");
-                    var linkElem = titleElem?.GetAttribute("href");
-
-                    var title = titleElem?.TextContent.Trim() ?? "Без заголовка";
-                    var content = contentElem?.TextContent.Trim() ?? "Нет содержимого";
-                    var url = linkElem != null ? new Uri(new Uri("https://habr.com"), linkElem).ToString() : "#";
-
-                    news.Add(new NewsItem
-                    {
-                        Title = title,
-                        Content = content.Length > 256 ? content[..256] + "..." : content,
-                        Url = url
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Ошибка парсинга: {ex}");
-                throw;
-            }
-
-            return news;
         }
 
         private void DisplayNewsPage()
@@ -219,7 +160,7 @@ namespace SkelAppliences
                 _currentPage = 0;
                 _allNews.Clear();
                 NewsContainer.Children.Clear();
-                _allNews = await ParseNews();
+                _allNews = await _newsParser.ParseNewsAsync();
                 DisplayNewsPage();
             }
             catch (Exception ex)
@@ -233,12 +174,5 @@ namespace SkelAppliences
             if (Shell.Current != null)
                 Shell.Current.FlyoutIsPresented = true;
         }
-    }
-
-    public class NewsItem
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
     }
 }
