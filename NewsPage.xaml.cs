@@ -123,10 +123,16 @@ namespace SkelAppliences
                         },
                         new Button
                         {
-                            Text = "Читать далее →",
-                            TextColor = Colors.White,
-                            BackgroundColor = Color.FromArgb("#4A90E2"),
-                            CornerRadius = 8,
+                            Text = "Читать →",
+                            TextColor = Color.FromArgb("#CCCCCC"),
+                            BackgroundColor = Color.FromArgb("#2D2D2D"),
+                            FontSize = 12,
+                            CornerRadius = 6,
+                            Padding = new Thickness(12, 6),
+                            Margin = new Thickness(0, 5, 0, 0),
+                            WidthRequest = 110,
+                            HorizontalOptions = LayoutOptions.End,
+                            VerticalOptions = LayoutOptions.Center,
                             Command = new Command(async () => await OpenUrl(item.Url))
                         }
                     }
