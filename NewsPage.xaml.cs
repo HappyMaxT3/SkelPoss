@@ -1,15 +1,17 @@
 ﻿using Microsoft.Maui.Controls;
 using SkelAppliences.Services;
-using System.Collections.ObjectModel;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SkelAppliences
 {
     public partial class NewsPage : ContentPage
     {
-        private const int PageSize = 4;
+        private const int PageSize = 5;
         private int _currentPage = 0;
         private List<NewsItem> _allNews = new();
-        private bool _isLoadingMore;
+        private bool _isLoading;
         private readonly NewsParser _newsParser = new();
 
         public NewsPage()
@@ -21,19 +23,29 @@ namespace SkelAppliences
 
         private void SetupScrollListener()
         {
+            const int loadThreshold = 50;
+            const int loadDelay = 200;
+
             MainScroll.Scrolled += async (sender, e) =>
             {
-                if (_isLoadingMore) return;
+                if (_isLoading || _allNews.Count == 0) return;
 
                 var scrollView = (ScrollView)sender;
                 var scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
 
-                if (scrollingSpace <= scrollView.ScrollY + 100)
+                if (scrollView.ScrollY >= scrollingSpace - loadThreshold)
                 {
-                    _isLoadingMore = true;
-                    await Task.Delay(300);
-                    DisplayNewsPage();
-                    _isLoadingMore = false;
+                    _isLoading = true;
+
+                    try
+                    {
+                        await Task.Delay(loadDelay);
+                        DisplayNewsPage();
+                    }
+                    finally
+                    {
+                        _isLoading = false;
+                    }
                 }
             };
         }
@@ -42,18 +54,28 @@ namespace SkelAppliences
         {
             try
             {
-                SetLoadingIndicator(true);
+                SetLoadingState(true);
                 _allNews = await _newsParser.ParseNewsAsync();
-                DisplayNewsPage();
+                ResetNewsView();
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", ex.Message, "OK");
+                await DisplayAlert("Ошибка", $"Ошибка загрузки: {ex.Message}", "OK");
             }
             finally
             {
-                SetLoadingIndicator(false);
+                SetLoadingState(false);
             }
+        }
+
+        private void ResetNewsView()
+        {
+            Dispatcher.Dispatch(() =>
+            {
+                NewsContainer.Children.Clear();
+                _currentPage = 0;
+                DisplayNewsPage();
+            });
         }
 
         private void DisplayNewsPage()
@@ -73,14 +95,15 @@ namespace SkelAppliences
 
         private void AddNewsItem(NewsItem item)
         {
-            var frame = new Frame
+            var newsCard = new Frame
             {
                 BackgroundColor = Color.FromArgb("#2D2D2D"),
-                Padding = 10,
-                Margin = new Thickness(0, 5),
-                CornerRadius = 10,
-                Content = new StackLayout
+                Padding = 15,
+                CornerRadius = 12,
+                HasShadow = true,
+                Content = new VerticalStackLayout
                 {
+                    Spacing = 8,
                     Children =
                     {
                         new Label
@@ -88,35 +111,29 @@ namespace SkelAppliences
                             Text = item.Title,
                             FontSize = 18,
                             FontAttributes = FontAttributes.Bold,
-                            TextColor = Colors.White
+                            TextColor = Colors.White,
+                            MaxLines = 2
                         },
                         new Label
                         {
                             Text = item.Content,
                             FontSize = 14,
                             TextColor = Color.FromArgb("#CCCCCC"),
-                            Margin = new Thickness(0, 5)
+                            MaxLines = 3
                         },
-                        CreateReadMoreButton(item.Url)
+                        new Button
+                        {
+                            Text = "Читать далее →",
+                            TextColor = Colors.White,
+                            BackgroundColor = Color.FromArgb("#4A90E2"),
+                            CornerRadius = 8,
+                            Command = new Command(async () => await OpenUrl(item.Url))
+                        }
                     }
                 }
             };
 
-            NewsContainer.Children.Add(frame);
-        }
-
-        private View CreateReadMoreButton(string url)
-        {
-            return new Button
-            {
-                Text = "Читать далее →",
-                TextColor = Colors.White,
-                BackgroundColor = Color.FromArgb("#4A90E2"),
-                CornerRadius = 5,
-                Margin = new Thickness(0, 5),
-                HorizontalOptions = LayoutOptions.End,
-                Command = new Command(async () => await OpenUrl(url))
-            };
+            NewsContainer.Children.Add(newsCard);
         }
 
         private async Task OpenUrl(string url)
@@ -131,21 +148,13 @@ namespace SkelAppliences
             }
         }
 
-        private void SetLoadingIndicator(bool isLoading)
-        {
-            Dispatcher.Dispatch(() =>
-            {
-                LoadingIndicator.IsVisible = isLoading;
-                LoadingIndicator.IsRunning = isLoading;
-            });
-        }
-
-        private void OnSwiped(object? sender, SwipedEventArgs e)
+        private void OnSwiped(object sender, SwipedEventArgs e)
         {
             switch (e.Direction)
             {
                 case SwipeDirection.Down:
-                    RefreshNews();
+                    if (!_isLoading)
+                        RefreshNews();
                     break;
                 case SwipeDirection.Right:
                     OpenSideMenu();
@@ -157,15 +166,18 @@ namespace SkelAppliences
         {
             try
             {
-                _currentPage = 0;
-                _allNews.Clear();
-                NewsContainer.Children.Clear();
+                SetLoadingState(true);
                 _allNews = await _newsParser.ParseNewsAsync();
-                DisplayNewsPage();
+                ResetNewsView();
+                await Task.Delay(500);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ошибка", ex.Message, "OK");
+                await DisplayAlert("Ошибка", $"Ошибка обновления: {ex.Message}", "OK");
+            }
+            finally
+            {
+                SetLoadingState(false);
             }
         }
 
@@ -173,6 +185,17 @@ namespace SkelAppliences
         {
             if (Shell.Current != null)
                 Shell.Current.FlyoutIsPresented = true;
+        }
+
+        private void SetLoadingState(bool isLoading)
+        {
+            _isLoading = isLoading;
+            Dispatcher.Dispatch(() =>
+            {
+                LoadingIndicator.IsVisible = isLoading;
+                LoadingIndicator.IsRunning = isLoading;
+                NewsContainer.Opacity = isLoading ? 0.5 : 1;
+            });
         }
     }
 }

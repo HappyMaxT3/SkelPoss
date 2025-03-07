@@ -11,16 +11,35 @@ namespace SkelAppliences.Services
         public NewsParser()
         {
             var handler = new HttpClientHandler();
-#if ANDROID
+
+#if ANDROID || IOS || MACCATALYST
             handler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true;
 #endif
+
             _httpClient = new HttpClient(handler)
             {
                 Timeout = TimeSpan.FromSeconds(15)
             };
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; MyNewsApp/1.0)");
+
+            var userAgent = GetPlatformUserAgent();
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
 
             _htmlParser = new HtmlParser();
+        }
+
+        private string GetPlatformUserAgent()
+        {
+#if ANDROID
+            return "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.210 Mobile Safari/537.36";
+#elif IOS
+            return "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1";
+#elif MACCATALYST
+            return "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15";
+#elif WINDOWS
+            return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+#else
+            return "Mozilla/5.0 (compatible; MyNewsApp/1.0)";
+#endif
         }
 
         public async Task<List<NewsItem>> ParseNewsAsync()
@@ -66,7 +85,7 @@ namespace SkelAppliences.Services
             if (string.IsNullOrWhiteSpace(content))
                 return "Нет содержимого";
 
-            return content.Length > 256 ? content[..256] + "..." : content;
+            return content.Length > 300 ? content[..300] + "..." : content;
         }
 
         private string ProcessUrl(string? url)

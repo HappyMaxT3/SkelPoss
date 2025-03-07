@@ -22,12 +22,14 @@
                    TextColor="White" />
 
             <!-- Индикатор загрузки -->
-            <ActivityIndicator x:Name="LoadingIndicator"
-                               IsRunning="False"
-                               Color="White"
-                               IsVisible="False"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
+        <ActivityIndicator x:Name="LoadingIndicator"
+                          IsVisible="False"
+                          IsRunning="False"
+                          Color="#4A90E2"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center"
+                          HeightRequest="50"
+                          WidthRequest="50"/>
 
             <!-- Контейнер для новостей -->
             <StackLayout x:Name="NewsContainer" 
