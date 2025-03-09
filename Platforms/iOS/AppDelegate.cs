@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace SkelAppliences
+namespace TechnoPoss
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

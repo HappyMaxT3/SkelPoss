@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Shell
-    x:Class="SkelAppliences.AppShell"
+    x:Class="TechnoPoss.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:SkelAppliences"
+    xmlns:local="clr-namespace:TechnoPoss"
     Shell.FlyoutBehavior="Flyout"
-    Title="SkelPoss"
+    Title="TechnoPoss"
     FlyoutBackgroundColor="#343434"
     BackgroundColor="#343434">
 
     <Shell.TitleView>
         <Grid HorizontalOptions="FillAndExpand"
               VerticalOptions="Center">
-            <Label Text="SKELPOSS"
+            <Label Text="TECHNOPOSS"
                    FontSize="20"
                    TextColor="#949494"
                    HorizontalOptions="Start"

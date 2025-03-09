@@ -1,10 +1,10 @@
 ﻿using Microsoft.Maui.Controls;
-using SkelAppliences.Services;
+using TechnoPoss.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SkelAppliences
+namespace TechnoPoss
 {
     public partial class NewsPage : ContentPage
     {

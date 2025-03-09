@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace SkelAppliences.ViewModels
+namespace TechnoPoss.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
