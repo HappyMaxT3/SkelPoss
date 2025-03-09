@@ -1,10 +1,10 @@
 ﻿using Microsoft.Maui.Controls;
-using SkelAppliences.Services;
+using TechnoPoss.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SkelAppliences
+namespace TechnoPoss
 {
     public partial class NewsPage : ContentPage
     {
@@ -30,21 +30,24 @@ namespace SkelAppliences
             {
                 if (_isLoading || _allNews.Count == 0) return;
 
-                var scrollView = (ScrollView)sender;
-                var scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
-
-                if (scrollView.ScrollY >= scrollingSpace - loadThreshold)
+                if (sender is ScrollView scrollView &&
+                    scrollView.ContentSize.Height > 0 &&
+                    scrollView.Height > 0)
                 {
-                    _isLoading = true;
+                    var scrollingSpace = scrollView.ContentSize.Height - scrollView.Height;
 
-                    try
+                    if (scrollView.ScrollY >= scrollingSpace - loadThreshold)
                     {
-                        await Task.Delay(loadDelay);
-                        DisplayNewsPage();
-                    }
-                    finally
-                    {
-                        _isLoading = false;
+                        _isLoading = true;
+                        try
+                        {
+                            await Task.Delay(loadDelay);
+                            DisplayNewsPage();
+                        }
+                        finally
+                        {
+                            _isLoading = false;
+                        }
                     }
                 }
             };

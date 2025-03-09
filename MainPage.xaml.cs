@@ -1,6 +1,6 @@
-﻿using SkelAppliences.ViewModels;
+﻿using TechnoPoss.ViewModels;
 
-namespace SkelAppliences;
+namespace TechnoPoss;
 
 public partial class MainPage : ContentPage
 {

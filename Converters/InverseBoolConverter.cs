@@ -2,7 +2,7 @@
 using System.Globalization;
 using Microsoft.Maui.Controls;
 
-namespace SkelAppliences.Converters
+namespace TechnoPoss.Converters
 {
     public class InverseBoolConverter : IValueConverter
     {

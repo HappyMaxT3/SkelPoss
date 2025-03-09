@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace SkelAppliences
+namespace TechnoPoss
 {
     [Application]
     public class MainApplication : MauiApplication
