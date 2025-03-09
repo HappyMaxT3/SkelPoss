@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace SkelAppliences
+namespace TechnoPoss
 {
     public static class MauiProgram
     {

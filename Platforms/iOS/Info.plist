@@ -3,11 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>SkelPoss</string>
-
+	<string>TechnoPoss</string>
 	<key>CFBundleDisplayName</key>
-	<string>SkelPoss</string>
-
+	<string>TechnoPoss</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIDeviceFamily</key>

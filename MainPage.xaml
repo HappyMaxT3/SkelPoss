@@ -1,9 +1,9 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:SkelAppliences.ViewModels"
-             xmlns:converters="clr-namespace:SkelAppliences.Converters"
+             xmlns:local="clr-namespace:TechnoPoss.ViewModels"
+             xmlns:converters="clr-namespace:TechnoPoss.Converters"
              x:DataType="local:MainViewModel"
-             x:Class="SkelAppliences.MainPage"
+             x:Class="TechnoPoss.MainPage"
              BackgroundColor="#1B1818">
 
     <!-- Ресурсы страницы -->

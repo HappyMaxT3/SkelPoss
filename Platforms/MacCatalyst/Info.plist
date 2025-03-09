@@ -12,10 +12,10 @@
     <!-- <key>LSApplicationCategoryType</key> -->
     <!-- <string>public.app-category.YOUR-CATEGORY-HERE</string> -->
 	<key>CFBundleName</key>
-	<string>SkelPoss</string>
+	<string>TechnoPoss</string>
 
 	<key>CFBundleDisplayName</key>
-	<string>SkelPoss</string>
+	<string>TechnoPoss</string>
 
 
 	<key>UIDeviceFamily</key>

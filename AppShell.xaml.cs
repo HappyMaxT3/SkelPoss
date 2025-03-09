@@ -1,4 +1,4 @@
-﻿namespace SkelAppliences
+﻿namespace TechnoPoss
 {
     public partial class AppShell : Shell
     {

@@ -4,7 +4,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using IElement = AngleSharp.Dom.IElement;
 
-namespace SkelAppliences.Services
+namespace TechnoPoss.Services
 {
     public class NewsParser
     {

@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace SkelAppliences
+namespace TechnoPoss
 {
     public class Program
     {
