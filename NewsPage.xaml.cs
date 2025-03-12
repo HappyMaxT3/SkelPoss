@@ -108,37 +108,41 @@ namespace TechnoPoss
                 {
                     Spacing = 8,
                     Children =
-                    {
-                        new Label
-                        {
-                            Text = item.Title,
-                            FontSize = 18,
-                            FontAttributes = FontAttributes.Bold,
-                            TextColor = Colors.White,
-                            MaxLines = 5
-                        },
-                        new Label
-                        {
-                            Text = item.Content,
-                            FontSize = 14,
-                            TextColor = Color.FromArgb("#CCCCCC"),
-                            MaxLines = 10
-                        },
-                        new Button
-                        {
-                            Text = "Читать →",
-                            TextColor = Color.FromArgb("#CCCCCC"),
-                            BackgroundColor = Color.FromArgb("#2D2D2D"),
-                            FontSize = 12,
-                            CornerRadius = 6,
-                            Padding = new Thickness(12, 6),
-                            Margin = new Thickness(0, 5, 0, 0),
-                            WidthRequest = 110,
-                            HorizontalOptions = LayoutOptions.End,
-                            VerticalOptions = LayoutOptions.Center,
-                            Command = new Command(async () => await OpenUrl(item.Url))
-                        }
-                    }
+            {
+                // Блок с источником
+                new Label
+                {
+                    Text = $"🔗 {item.Source}",
+                    FontSize = 12,
+                    TextColor = Color.FromArgb("#65C3BA"),
+                    HorizontalOptions = LayoutOptions.Start
+                },
+                new Label
+                {
+                    Text = item.Title,
+                    FontSize = 18,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Colors.White,
+                    MaxLines = 2
+                },
+                new Label
+                {
+                    Text = item.Content,
+                    FontSize = 14,
+                    TextColor = Color.FromArgb("#CCCCCC"),
+                    MaxLines = 3
+                },
+                new Button
+                {
+                    Text = "Читать →",
+                    TextColor = Colors.White,
+                    BackgroundColor = Color.FromArgb("#2D2D2D"),
+                    CornerRadius = 6,
+                    Padding = new Thickness(12, 6),
+                    HorizontalOptions = LayoutOptions.End,
+                    Command = new Command(async () => await OpenUrl(item.Url))
+                }
+            }
                 }
             };
 

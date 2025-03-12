@@ -53,6 +53,7 @@ namespace TechnoPoss.Services
 
     public class NewsItem
     {
+        public string Source { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
