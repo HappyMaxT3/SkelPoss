@@ -9,6 +9,14 @@
     FlyoutBackgroundColor="#343434"
     BackgroundColor="#343434">
 
+    <Shell.FlyoutIcon>
+        <FontImageSource 
+            Glyph="&#xE5D2;"
+            FontFamily="MaterialIcons"
+            Color="#949494"
+            Size="30"/>
+    </Shell.FlyoutIcon>
+
     <Shell.TitleView>
         <Grid HorizontalOptions="FillAndExpand"
               VerticalOptions="Center">
@@ -21,11 +29,12 @@
         </Grid>
     </Shell.TitleView>
 
-    <FlyoutItem Title="Чат">
+    <!-- Остальной код -->
+    <FlyoutItem Title="Chat">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Новости">
+    <FlyoutItem Title="News">
         <ShellContent ContentTemplate="{DataTemplate local:NewsPage}" />
     </FlyoutItem>
 
