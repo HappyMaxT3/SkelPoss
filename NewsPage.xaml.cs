@@ -115,14 +115,14 @@ namespace TechnoPoss
                             FontSize = 18,
                             FontAttributes = FontAttributes.Bold,
                             TextColor = Colors.White,
-                            MaxLines = 2
+                            MaxLines = 5
                         },
                         new Label
                         {
                             Text = item.Content,
                             FontSize = 14,
                             TextColor = Color.FromArgb("#CCCCCC"),
-                            MaxLines = 8
+                            MaxLines = 10
                         },
                         new Button
                         {
