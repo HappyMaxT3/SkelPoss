@@ -18,7 +18,7 @@
                    FontAttributes="Bold" 
                    TextColor="White" />
 
-            <Label Text="📢 Last news and articles..." 
+            <Label Text="📢 Latest news and articles..." 
                    TextColor="White" />
 
             <!-- Индикатор загрузки -->

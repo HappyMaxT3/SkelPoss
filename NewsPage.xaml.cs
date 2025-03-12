@@ -109,12 +109,11 @@ namespace TechnoPoss
                     Spacing = 8,
                     Children =
             {
-                // Блок с источником
                 new Label
                 {
                     Text = $"🔗 {item.Source}",
                     FontSize = 12,
-                    TextColor = Color.FromArgb("#65C3BA"),
+                    TextColor = Color.FromArgb("#FFA500"),
                     HorizontalOptions = LayoutOptions.Start
                 },
                 new Label
@@ -123,14 +122,14 @@ namespace TechnoPoss
                     FontSize = 18,
                     FontAttributes = FontAttributes.Bold,
                     TextColor = Colors.White,
-                    MaxLines = 2
+                    MaxLines = 6
                 },
                 new Label
                 {
                     Text = item.Content,
                     FontSize = 14,
                     TextColor = Color.FromArgb("#CCCCCC"),
-                    MaxLines = 3
+                    MaxLines = 9
                 },
                 new Button
                 {

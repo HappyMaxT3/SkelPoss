@@ -9,6 +9,8 @@ namespace TechnoPoss.Services
     {
         private readonly HttpClient _httpClient;
         private readonly HabrParser _habrParser;
+        private readonly FourPDAParser _4pdaParser;
+        private readonly Random _random = new();
 
         public NewsParser()
         {
@@ -30,24 +32,52 @@ namespace TechnoPoss.Services
 
             ConfigureHttpClient();
             _habrParser = new HabrParser();
+            _4pdaParser = new FourPDAParser();
         }
 
         private void ConfigureHttpClient()
         {
-            var userAgent = GetDesktopUserAgent();
+            var userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
             _httpClient.DefaultRequestHeaders.UserAgent.Clear();
             _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
             _httpClient.DefaultRequestHeaders.Add("Accept", "text/html,application/xhtml+xml,application/xml");
         }
 
-        private string GetDesktopUserAgent()
-        {
-            return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36";
-        }
-
         public async Task<List<NewsItem>> ParseNewsAsync()
         {
-            return await _habrParser.ParseHabrNewsAsync(_httpClient);
+            try
+            {
+                //var pdaTask = _4pdaParser.Parse4PDANewsAsync(_httpClient);
+                var habrTask = _habrParser.ParseHabrNewsAsync(_httpClient);
+                var pdaTask = _4pdaParser.Parse4PDANewsAsync(_httpClient);
+
+                await Task.WhenAll(habrTask, pdaTask);
+
+                var combinedNews = habrTask.Result
+                    .Concat(pdaTask.Result)
+                    .GroupBy(x => x.Url)
+                    .Select(g => g.First())
+                    .ToList();
+
+                return ShuffleArticles(combinedNews);
+            }
+            catch
+            {
+                return new List<NewsItem>();
+            }
+        }
+
+        private List<NewsItem> ShuffleArticles(List<NewsItem> articles)
+        {
+
+            int n = articles.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = _random.Next(n + 1);
+                (articles[k], articles[n]) = (articles[n], articles[k]);
+            }
+            return articles;
         }
     }
 
