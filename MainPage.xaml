@@ -22,24 +22,30 @@
 
                             <!-- Сообщение пользователя (справа) -->
                             <Border 
-                                Padding="10" 
-                                BackgroundColor="#343434" 
+                                Padding="10"
+                                BackgroundColor="#343434"
                                 HorizontalOptions="End"
                                 StrokeShape="RoundRectangle 15"
                                 StrokeThickness="0"
                                 IsVisible="{Binding IsUserMessage}">
-                                <Label Text="{Binding Text}" TextColor="White" />
+                                            <Label Text="{Binding Text}" 
+                               TextColor="White" 
+                               MaximumWidthRequest="{OnPlatform Default=512, Android=256, iOS=256}" 
+                               LineBreakMode="WordWrap"/>
                             </Border>
 
                             <!-- Ответное сообщение от модели (слева) -->
                             <Border 
-                                Padding="10" 
-                                BackgroundColor="#343434" 
+                                Padding="10"
+                                BackgroundColor="#343434"
                                 HorizontalOptions="Start"
                                 StrokeShape="RoundRectangle 15"
                                 StrokeThickness="0"
                                 IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}">
-                                <Label Text="{Binding Text}" TextColor="White" />
+                                            <Label Text="{Binding Text}" 
+                               TextColor="White"
+                               MaximumWidthRequest="{OnPlatform Default=500, Android=270, iOS=270}" 
+                               LineBreakMode="WordWrap"/>
                             </Border>
 
                         </Grid>
