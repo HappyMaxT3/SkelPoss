@@ -73,7 +73,7 @@ namespace TechnoPoss.Services
         {
             return article.QuerySelector("h2.post-title a")?
                 .TextContent?
-                .Trim() ?? "Без заголовка";
+                .Trim() ?? "No title";
         }
 
         private string ExtractContent(IElement article)
@@ -93,7 +93,7 @@ namespace TechnoPoss.Services
         private string ProcessContent(string? html)
         {
             if (string.IsNullOrWhiteSpace(html))
-                return "Нет содержимого";
+                return "Not available";
 
             var cleaned = Regex.Replace(html,
                 @"<script.*?</script>|<!--.*?-->|\[.*?\]|<div class=""(ad|mobile-related).*?div>",

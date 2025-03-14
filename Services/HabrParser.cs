@@ -70,17 +70,11 @@ namespace TechnoPoss.Services
             }).ToList();
         }
 
-        private string DetectCategory(IElement article)
-        {
-            var hubLinks = article.QuerySelectorAll("a.tm-article-snippet__hubs-item-link");
-            return hubLinks.FirstOrDefault()?.TextContent.Trim() ?? "Общее";
-        }
-
         private string ExtractTitle(IElement article)
         {
             return article.QuerySelector("h2.tm-title a, a.tm-article-snippet__title-link")?
                 .TextContent?
-                .Trim() ?? "Без заголовка";
+                .Trim() ?? "No title";
         }
 
         private string ExtractContent(IElement article)
@@ -106,7 +100,7 @@ namespace TechnoPoss.Services
         private string ProcessContent(string? html)
         {
             if (string.IsNullOrWhiteSpace(html))
-                return "Нет содержимого";
+                return "Not available";
 
             var text = Regex.Replace(html, "<[^>]+>|&nbsp;", " ")
                 .Replace("Читать далее", "")
