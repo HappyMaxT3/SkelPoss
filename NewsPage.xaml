@@ -13,19 +13,19 @@
             </StackLayout.GestureRecognizers>
 
             <!-- Заголовок -->
-            <Label Text="Новости" 
+            <Label Text="News" 
                    FontSize="24" 
                    FontAttributes="Bold" 
                    TextColor="White" />
 
-            <Label Text="📢 Последние новости..." 
-                   TextColor="White" />
+            <Label Text="📢 Latest news and articles..." 
+                   TextColor="#A0A0A0" />
 
             <!-- Индикатор загрузки -->
         <ActivityIndicator x:Name="LoadingIndicator"
                           IsVisible="False"
                           IsRunning="False"
-                          Color="#4A90E2"
+                          Color="White"
                           HorizontalOptions="Center"
                           VerticalOptions="Center"
                           HeightRequest="50"

@@ -6,67 +6,108 @@
              x:Class="TechnoPoss.MainPage"
              BackgroundColor="#1B1818">
 
-    <!-- Ресурсы страницы -->
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
     </ContentPage.Resources>
 
-    <ScrollView>
-        <Grid RowDefinitions="*, Auto">
+    <Grid RowDefinitions="*, Auto">
+        <ScrollView Grid.Row="0">
+            <Grid RowDefinitions="Auto, *">
+                <!-- Заголовок -->
+                <VerticalStackLayout Grid.Row="0"
+                                   Margin="10,10">
+                    <Label Text="Chat" 
+                         FontSize="24" 
+                         FontAttributes="Bold" 
+                         TextColor="White"/>
 
-            <!-- Список сообщений -->
-            <CollectionView x:Name="MessagesList" ItemsSource="{Binding Messages}">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="local:Message">
-                        <Grid RowDefinitions="Auto, Auto" Margin="5">
+                    <Label Text="🔎 Looking for techs..." 
+                         TextColor="#A0A0A0"
+                         FontSize="14"/>
+                </VerticalStackLayout>
 
-                            <!-- Сообщение пользователя (справа) -->
-                            <Border 
-                                Padding="10" 
-                                BackgroundColor="#343434" 
-                                HorizontalOptions="End"
-                                StrokeShape="RoundRectangle 15"
-                                StrokeThickness="0"
-                                IsVisible="{Binding IsUserMessage}">
-                                <Label Text="{Binding Text}" TextColor="White" />
-                            </Border>
+                <!-- Список сообщений -->
+                <CollectionView x:Name="MessagesList" 
+                              Grid.Row="1"
+                              ItemsSource="{Binding Messages}"
+                              Margin="0,15,0,20">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="local:Message">
+                            <Grid RowDefinitions="Auto, Auto" Margin="0,8">
+                                <!-- Сообщение пользователя -->
+                                <Border 
+                                    Padding="12"
+                                    BackgroundColor="#343434"
+                                    HorizontalOptions="End"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="0"
+                                    IsVisible="{Binding IsUserMessage}">
+                                    <Label Text="{Binding Text}" 
+                                         TextColor="White" 
+                                         MaximumWidthRequest="{OnPlatform Default=512, Android=256, iOS=256}" 
+                                         LineBreakMode="WordWrap"/>
+                                </Border>
 
-                            <!-- Ответное сообщение от модели (слева) -->
-                            <Border 
-                                Padding="10" 
-                                BackgroundColor="#343434" 
-                                HorizontalOptions="Start"
-                                StrokeShape="RoundRectangle 15"
-                                StrokeThickness="0"
-                                IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}">
-                                <Label Text="{Binding Text}" TextColor="White" />
-                            </Border>
+                                <!-- Ответ системы -->
+                                <Border 
+                                    Padding="12"
+                                    BackgroundColor="#343434"
+                                    HorizontalOptions="Start"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="0"
+                                    IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}">
+                                    <Label Text="{Binding Text}" 
+                                         TextColor="White"
+                                         MaximumWidthRequest="{OnPlatform Default=500, Android=270, iOS=270}"  
+                                         LineBreakMode="WordWrap"/>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
 
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-
-                <!-- Swipe Gesture -->
-                <CollectionView.GestureRecognizers>
-                    <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped" />
-                </CollectionView.GestureRecognizers>
-                
-            </CollectionView>
-
-            <!-- Поле ввода + кнопки -->
-            <Grid Grid.Row="1" ColumnDefinitions="*, Auto, Auto">
-                <Entry x:Name="MessageEntry" Placeholder="Введите сообщение..." 
-           TextColor="White" Text="{Binding MessageText, Mode=TwoWay}" />
-
-                <Button Text="->" Clicked="SendMessage_Clicked" Grid.Column="1"
-            BackgroundColor="#343434" TextColor="White"
-            CornerRadius="36" WidthRequest="50" HeightRequest="50"/>
-
-                <Button Text="🎙" Clicked="RecordVoice_Clicked" Grid.Column="2"
-            BackgroundColor="#343434" TextColor="White"
-            CornerRadius="36" WidthRequest="50" HeightRequest="50"/>
+                    <CollectionView.GestureRecognizers>
+                        <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped" />
+                    </CollectionView.GestureRecognizers>
+                </CollectionView>
             </Grid>
+        </ScrollView>
 
+        <!-- Фиксированная панель ввода -->
+        <Grid Grid.Row="1"
+             ColumnDefinitions="*, Auto, Auto"
+             Padding="15,10"
+             BackgroundColor="#1B1818"
+             RowSpacing="10"
+             ColumnSpacing="10">
+
+            <Entry x:Name="MessageEntry" 
+                 Placeholder="Введите сообщение..." 
+                 TextColor="White" 
+                 BackgroundColor="#343434"
+                 Text="{Binding MessageText, Mode=TwoWay}"
+                 ClearButtonVisibility="WhileEditing"
+                 FontSize="14"
+                 HeightRequest="50"/>
+
+            <Button Grid.Column="1"
+                  Text="➜"
+                  Clicked="SendMessage_Clicked"
+                  BackgroundColor="#404040"
+                  TextColor="White"
+                  FontSize="16"
+                  CornerRadius="25"
+                  WidthRequest="50"
+                  HeightRequest="50"/>
+
+            <Button Grid.Column="2"
+                  Text="🎙"
+                  Clicked="RecordVoice_Clicked"
+                  BackgroundColor="#404040"
+                  TextColor="White"
+                  FontSize="16"
+                  CornerRadius="25"
+                  WidthRequest="50"
+                  HeightRequest="50"/>
         </Grid>
-    </ScrollView>
+    </Grid>
 </ContentPage>

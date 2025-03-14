@@ -8,7 +8,7 @@ namespace TechnoPoss
 {
     public partial class NewsPage : ContentPage
     {
-        private const int PageSize = 5;
+        private const int PageSize = 3;
         private int _currentPage = 0;
         private List<NewsItem> _allNews = new();
         private bool _isLoading;
@@ -98,6 +98,8 @@ namespace TechnoPoss
 
         private void AddNewsItem(NewsItem item)
         {
+            ImageSource imageSource = GetImageSource(item.ImageUrl);
+
             var newsCard = new Frame
             {
                 BackgroundColor = Color.FromArgb("#2D2D2D"),
@@ -108,41 +110,91 @@ namespace TechnoPoss
                 {
                     Spacing = 8,
                     Children =
+            {
+                new Frame
+                {
+                    CornerRadius = 10,
+                    IsClippedToBounds = true,
+                    Padding = 0,
+                    Margin = 0,
+                    BackgroundColor = Colors.Transparent,
+                    Content = new Image
                     {
-                        new Label
-                        {
-                            Text = item.Title,
-                            FontSize = 18,
-                            FontAttributes = FontAttributes.Bold,
-                            TextColor = Colors.White,
-                            MaxLines = 2
-                        },
-                        new Label
-                        {
-                            Text = item.Content,
-                            FontSize = 14,
-                            TextColor = Color.FromArgb("#CCCCCC"),
-                            MaxLines = 8
-                        },
-                        new Button
-                        {
-                            Text = "Читать →",
-                            TextColor = Color.FromArgb("#CCCCCC"),
-                            BackgroundColor = Color.FromArgb("#2D2D2D"),
-                            FontSize = 12,
-                            CornerRadius = 6,
-                            Padding = new Thickness(12, 6),
-                            Margin = new Thickness(0, 5, 0, 0),
-                            WidthRequest = 110,
-                            HorizontalOptions = LayoutOptions.End,
-                            VerticalOptions = LayoutOptions.Center,
-                            Command = new Command(async () => await OpenUrl(item.Url))
-                        }
+                        Source = imageSource,
+                        Aspect = Aspect.AspectFill,
+                        HeightRequest = 200,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Margin = 0,
+                        IsVisible = imageSource != null
                     }
+                },
+                new Label
+                {
+                    Text = $"🔗 {item.Source}",
+                    FontSize = 12,
+                    TextColor = Color.FromArgb(item.SourceColor),
+                    HorizontalOptions = LayoutOptions.Start
+                },
+                new Label
+                {
+                    Text = item.Title,
+                    FontSize = 18,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Colors.White,
+                    MaxLines = 6
+                },
+                new Label
+                {
+                    Text = item.Content,
+                    FontSize = 14,
+                    TextColor = Color.FromArgb("#CCCCCC"),
+                    MaxLines = 9
+                },
+                new Button
+                {
+                    Text = "Читать →",
+                    TextColor = Colors.White,
+                    BackgroundColor = Color.FromArgb("#2D2D2D"),
+                    CornerRadius = 6,
+                    Padding = new Thickness(12, 6),
+                    HorizontalOptions = LayoutOptions.End,
+                    Command = new Command(async () => await OpenUrl(item.Url))
+                }
+            }
                 }
             };
 
             NewsContainer.Children.Add(newsCard);
+        }
+
+        private ImageSource GetImageSource(string imageUrl)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(imageUrl))
+                    return GetFallbackImage();
+
+                if (imageUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new UriImageSource
+                    {
+                        Uri = new Uri(imageUrl),
+                        CachingEnabled = true,
+                        CacheValidity = TimeSpan.FromDays(1)
+                    };
+                }
+
+                return ImageSource.FromFile(imageUrl) ?? GetFallbackImage();
+            }
+            catch
+            {
+                return GetFallbackImage();
+            }
+        }
+
+        private ImageSource GetFallbackImage()
+        {
+            return ImageSource.FromFile("opossum1.jpg");
         }
 
         private async Task OpenUrl(string url)
