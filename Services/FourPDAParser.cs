@@ -11,6 +11,8 @@ namespace TechnoPoss.Services
         private const string BaseUrl = "https://4pda.to";
         private readonly HtmlParser _htmlParser = new();
 
+        private const string DefaultImage = "opossum.jpg";
+
         private class Section
         {
             public string Path { get; set; }
@@ -72,6 +74,7 @@ namespace TechnoPoss.Services
                 var title = ExtractTitle(article);
                 var description = ExtractDescription(article);
                 var url = ExtractUrl(article);
+                var imageUrl = ExtractImageUrl(article);
 
                 newsItems.Add(new NewsItem
                 {
@@ -79,11 +82,26 @@ namespace TechnoPoss.Services
                     SourceColor = "#D6E4F0",
                     Title = title,
                     Content = description,
-                    Url = url
+                    Url = url,
+                    ImageUrl = imageUrl
                 });
             }
 
             return newsItems;
+        }
+
+        private string ExtractImageUrl(IElement article)
+        {
+            var previewContainer = article.QuerySelector(".WHalBy9w");
+            if (previewContainer == null) return DefaultImage;
+
+            var imgElement = previewContainer.QuerySelector("img");
+            if (imgElement == null) return DefaultImage;
+
+            var src = imgElement.GetAttribute("src");
+            if (string.IsNullOrWhiteSpace(src)) return DefaultImage;
+
+            return src.StartsWith("http") ? src : $"{BaseUrl}{src}";
         }
 
         private bool HasAllowedTags(IElement article, string[] allowedTags)

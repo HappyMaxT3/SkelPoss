@@ -8,7 +8,7 @@ namespace TechnoPoss
 {
     public partial class NewsPage : ContentPage
     {
-        private const int PageSize = 5;
+        private const int PageSize = 4;
         private int _currentPage = 0;
         private List<NewsItem> _allNews = new();
         private bool _isLoading;
@@ -98,6 +98,8 @@ namespace TechnoPoss
 
         private void AddNewsItem(NewsItem item)
         {
+            ImageSource imageSource = GetImageSource(item.ImageUrl);
+
             var newsCard = new Frame
             {
                 BackgroundColor = Color.FromArgb("#2D2D2D"),
@@ -109,11 +111,19 @@ namespace TechnoPoss
                     Spacing = 8,
                     Children =
             {
+                new Image
+                {
+                    Source = imageSource,
+                    Aspect = Aspect.AspectFill,
+                    HeightRequest = 200,
+                    HorizontalOptions = LayoutOptions.Fill,
+                    IsVisible = imageSource != null
+                },
                 new Label
                 {
                     Text = $"🔗 {item.Source}",
                     FontSize = 12,
-                    TextColor = Color.FromArgb($"{item.SourceColor}"),
+                    TextColor = Color.FromArgb(item.SourceColor),
                     HorizontalOptions = LayoutOptions.Start
                 },
                 new Label
@@ -146,6 +156,31 @@ namespace TechnoPoss
             };
 
             NewsContainer.Children.Add(newsCard);
+        }
+
+        private ImageSource GetImageSource(string imageUrl)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(imageUrl))
+                    return null;
+
+                if (imageUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new UriImageSource
+                    {
+                        Uri = new Uri(imageUrl),
+                        CachingEnabled = true,
+                        CacheValidity = TimeSpan.FromDays(1)
+                    };
+                }
+
+                return ImageSource.FromFile(imageUrl);
+            }
+            catch
+            {
+                return ImageSource.FromFile("opossum1.jpg");
+            }
         }
 
         private async Task OpenUrl(string url)

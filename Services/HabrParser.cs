@@ -11,6 +11,7 @@ namespace TechnoPoss.Services
         private const string BaseUrl = "https://habr.com";
         private readonly HtmlParser _htmlParser;
         private readonly Random _random = new();
+        private readonly string[] _placeholderImages = { "opossum.jpg" };
 
         private readonly string[] _targetFlows =
         {
@@ -67,8 +68,30 @@ namespace TechnoPoss.Services
                 SourceColor = "#F4A261",
                 Title = ExtractTitle(article),
                 Content = ExtractContent(article),
-                Url = ExtractUrl(article)
+                Url = ExtractUrl(article),
+                ImageUrl = ExtractImage(article)
             }).ToList();
+        }
+
+        private string ExtractImage(IElement article)
+        {
+            var imageUrl = article.QuerySelector(".tm-article-snippet__cover img, .article-formatted-body img")?
+                .GetAttribute("src")?
+                .Trim();
+
+            // Если изображение не найдено, используем локальный файл из ресурсов
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                return _placeholderImages[_random.Next(_placeholderImages.Length)];
+            }
+
+            // Обработка относительных URL
+            if (!imageUrl.StartsWith("http"))
+            {
+                return $"{BaseUrl}{imageUrl}";
+            }
+
+            return imageUrl;
         }
 
         private string ExtractTitle(IElement article)

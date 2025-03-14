@@ -46,7 +46,8 @@ namespace TechnoPoss.Services
                         SourceColor = "Red",
                         Title = ExtractTitle(article),
                         Content = ExtractContent(article),
-                        Url = ExtractUrl(article)
+                        Url = ExtractUrl(article),
+                        ImageUrl = "img"
                     };
                 }
                 catch

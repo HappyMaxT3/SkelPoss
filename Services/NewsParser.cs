@@ -10,7 +10,7 @@ namespace TechnoPoss.Services
         private readonly HttpClient _httpClient;
         private readonly HabrParser _habrParser;
         private readonly FourPDAParser _4pdaParser;
-        private readonly TechRadarParser _techRadarParser;
+        //private readonly TechRadarParser _techRadarParser;
 
         private readonly Random _random = new();
 
@@ -35,7 +35,7 @@ namespace TechnoPoss.Services
             ConfigureHttpClient();
             _habrParser = new HabrParser();
             _4pdaParser = new FourPDAParser();
-            _techRadarParser = new TechRadarParser();
+            //_techRadarParser = new TechRadarParser();
         }
 
         private void ConfigureHttpClient()
@@ -50,12 +50,13 @@ namespace TechnoPoss.Services
         {
             try
             {
-                var techRadarTask = _techRadarParser.ParseTechRadarNewsAsync(_httpClient);
+                //var techRadarTask = _techRadarParser.ParseTechRadarNewsAsync(_httpClient);
                 var habrTask = _habrParser.ParseHabrNewsAsync(_httpClient);
                 var pdaTask = _4pdaParser.Parse4PDANewsAsync(_httpClient);
 
                 //await Task.WhenAll(habrTask, pdaTask, techRadarTask);
                 await Task.WhenAll(habrTask, pdaTask);
+                await Task.WhenAll(habrTask);
 
                 var combinedNews = habrTask.Result
                     .Concat(pdaTask.Result)
@@ -92,5 +93,6 @@ namespace TechnoPoss.Services
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = string.Empty;
     }
 }
