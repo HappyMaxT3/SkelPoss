@@ -76,6 +76,7 @@ namespace TechnoPoss.Services
                 newsItems.Add(new NewsItem
                 {
                     Source = "4pda.to",
+                    SourceColor = "#D6E4F0",
                     Title = title,
                     Content = description,
                     Url = url

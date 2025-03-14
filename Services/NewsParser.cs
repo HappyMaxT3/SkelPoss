@@ -55,9 +55,9 @@ namespace TechnoPoss.Services
                 var pdaTask = _4pdaParser.Parse4PDANewsAsync(_httpClient);
 
                 //await Task.WhenAll(habrTask, pdaTask, techRadarTask);
-                await Task.WhenAll(techRadarTask);
+                await Task.WhenAll(habrTask, pdaTask);
 
-                var combinedNews = techRadarTask.Result
+                var combinedNews = habrTask.Result
                     .Concat(pdaTask.Result)
                     .GroupBy(x => x.Url)
                     .Select(g => g.First())
@@ -88,6 +88,7 @@ namespace TechnoPoss.Services
     public class NewsItem
     {
         public string Source { get; set; } = string.Empty;
+        public string SourceColor {  get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;

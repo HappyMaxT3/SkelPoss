@@ -43,6 +43,7 @@ namespace TechnoPoss.Services
                     return new NewsItem
                     {
                         Source = "TechRadar.com",
+                        SourceColor = "Red",
                         Title = ExtractTitle(article),
                         Content = ExtractContent(article),
                         Url = ExtractUrl(article)

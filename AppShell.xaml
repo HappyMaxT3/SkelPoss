@@ -11,25 +11,29 @@
 
     <Shell.FlyoutIcon>
         <FontImageSource 
-            Glyph="&#xE5D2;"
+            Glyph=""
             FontFamily="MaterialIcons"
             Color="#949494"
             Size="30"/>
     </Shell.FlyoutIcon>
 
     <Shell.TitleView>
-        <Grid HorizontalOptions="FillAndExpand"
-              VerticalOptions="Center">
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
             <Label Text="TECHNOPOSS"
                    FontSize="20"
                    TextColor="#949494"
                    HorizontalOptions="Start"
+                   VerticalOptions="Center"
                    Margin="15,0,0,0"
-                   VerticalOptions="Center"/>
+                   Grid.Column="0"/>
         </Grid>
     </Shell.TitleView>
 
-    <!-- Остальной код -->
     <FlyoutItem Title="Chat">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>

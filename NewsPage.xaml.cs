@@ -113,7 +113,7 @@ namespace TechnoPoss
                 {
                     Text = $"🔗 {item.Source}",
                     FontSize = 12,
-                    TextColor = Color.FromArgb("#FFA500"),
+                    TextColor = Color.FromArgb($"{item.SourceColor}"),
                     HorizontalOptions = LayoutOptions.Start
                 },
                 new Label

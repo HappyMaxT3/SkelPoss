@@ -64,6 +64,7 @@ namespace TechnoPoss.Services
             return articles.Select(article => new NewsItem
             {
                 Source = "habr.com",
+                SourceColor = "#F4A261",
                 Title = ExtractTitle(article),
                 Content = ExtractContent(article),
                 Url = ExtractUrl(article)
