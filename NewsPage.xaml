@@ -19,7 +19,7 @@
                    TextColor="White" />
 
             <Label Text="📢 Latest news and articles..." 
-                   TextColor="White" />
+                   TextColor="#A0A0A0" />
 
             <!-- Индикатор загрузки -->
         <ActivityIndicator x:Name="LoadingIndicator"
