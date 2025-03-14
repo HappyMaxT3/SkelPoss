@@ -8,7 +8,7 @@ namespace TechnoPoss
 {
     public partial class NewsPage : ContentPage
     {
-        private const int PageSize = 4;
+        private const int PageSize = 3;
         private int _currentPage = 0;
         private List<NewsItem> _allNews = new();
         private bool _isLoading;
@@ -111,13 +111,22 @@ namespace TechnoPoss
                     Spacing = 8,
                     Children =
             {
-                new Image
+                new Frame
                 {
-                    Source = imageSource,
-                    Aspect = Aspect.AspectFill,
-                    HeightRequest = 200,
-                    HorizontalOptions = LayoutOptions.Fill,
-                    IsVisible = imageSource != null
+                    CornerRadius = 10,
+                    IsClippedToBounds = true,
+                    Padding = 0,
+                    Margin = 0,
+                    BackgroundColor = Colors.Transparent,
+                    Content = new Image
+                    {
+                        Source = imageSource,
+                        Aspect = Aspect.AspectFill,
+                        HeightRequest = 200,
+                        HorizontalOptions = LayoutOptions.Fill,
+                        Margin = 0,
+                        IsVisible = imageSource != null
+                    }
                 },
                 new Label
                 {
@@ -163,7 +172,7 @@ namespace TechnoPoss
             try
             {
                 if (string.IsNullOrEmpty(imageUrl))
-                    return null;
+                    return GetFallbackImage();
 
                 if (imageUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 {
@@ -175,12 +184,17 @@ namespace TechnoPoss
                     };
                 }
 
-                return ImageSource.FromFile(imageUrl);
+                return ImageSource.FromFile(imageUrl) ?? GetFallbackImage();
             }
             catch
             {
-                return ImageSource.FromFile("opossum1.jpg");
+                return GetFallbackImage();
             }
+        }
+
+        private ImageSource GetFallbackImage()
+        {
+            return ImageSource.FromFile("opossum1.jpg");
         }
 
         private async Task OpenUrl(string url)
