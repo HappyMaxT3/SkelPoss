@@ -8,19 +8,23 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
-
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from undetected_chromedriver import ChromeOptions
 
-options = ChromeOptions()
-options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")  # Пример User-Agent
-options.add_argument("--lang=ru")  # Укажите язык
-options.add_argument("--disable-extensions")  # Отключить расширения
-options.add_argument("--disable-notifications")  # Отключить уведомления
-
+def get_options():
+    options = webdriver.ChromeOptions()
+    options.add_argument("--user-agent=*")  # Пример User-Agent
+    options.add_argument("--lang=ru")  # Укажите язык
+    options.add_argument("--disable-extensions")  # Отключить расширения
+    options.add_argument("--disable-notifications")  # Отключить уведомления
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    return options
 def get_page_links_enhanced(stop_link: str,max_pages: int)-> set:
     """Получает все ссылки на товары с DNS"""
     links = set()
-    driver = uc.Chrome(options=options, use_subprocess=True)
+    driver = uc.Chrome(options=get_options(), use_subprocess=True)
     driver.get("https://www.dns-shop.ru/novelties/?stock=now-today-tomorrow-later-out_of_stock&p=1")
     amount = WebDriverWait(driver, 30).until(
         EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'li[data-role="pagination-page"]'))
@@ -56,7 +60,7 @@ def get_page_links_enhanced(stop_link: str,max_pages: int)-> set:
 
 def get_product_description_page(prod_url: str)->str:
     """Получает описание со страницы товара по ссылке на него в DNS"""
-    driver = uc.Chrome(options=options, use_subprocess=True)
+    driver = uc.Chrome(options=get_options(), use_subprocess=True)
     driver.get(prod_url)
 
     element = WebDriverWait(driver, 30).until(
@@ -71,8 +75,10 @@ def get_product_description_page(prod_url: str)->str:
         EC.presence_of_element_located((By.XPATH, '//div[@class="product-card-description__main"]'))
     )
     time.sleep(random.randint(1,10))
+    #driver.quit() должен вызываться после всех операций с элементами страницы, иначе это вызовет ошибку и все сломается
+    page = element.get_attribute("innerHTML").encode('utf-8', errors='ignore').decode('utf-8')
     driver.quit()
-    return element.get_attribute("innerHTML").encode('utf-8', errors='ignore').decode('utf-8')
+    return page
 
 def parse_product_description(desc_to_parse:str)->str:
     """Берет скачанную страницу с DNS и парсит ее в краткий и удобный формат чтоб запихать в RAG"""
