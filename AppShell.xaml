@@ -25,6 +25,7 @@
             </Grid.ColumnDefinitions>
 
             <Label Text="TECHNOPOSS"
+                   FontFamily="TitleOposs"
                    FontSize="20"
                    TextColor="#949494"
                    HorizontalOptions="Start"
@@ -34,11 +35,11 @@
         </Grid>
     </Shell.TitleView>
 
-    <FlyoutItem Title="Chat">
+    <FlyoutItem Title="🔎 Chat">
         <ShellContent ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="News">
+    <FlyoutItem Title="📢 News">
         <ShellContent ContentTemplate="{DataTemplate local:NewsPage}" />
     </FlyoutItem>
 
