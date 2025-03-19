@@ -102,6 +102,7 @@ namespace TechnoPoss
 
             var newsCard = new Frame
             {
+                BorderColor = Colors.Transparent,
                 BackgroundColor = Color.FromArgb("#2D2D2D"),
                 Padding = 15,
                 CornerRadius = 12,
@@ -117,6 +118,7 @@ namespace TechnoPoss
                     IsClippedToBounds = true,
                     Padding = 0,
                     Margin = 0,
+                    BorderColor = Colors.Transparent,
                     BackgroundColor = Colors.Transparent,
                     Content = new Image
                     {
@@ -194,7 +196,7 @@ namespace TechnoPoss
 
         private ImageSource GetFallbackImage()
         {
-            return ImageSource.FromFile("opossum1.jpg");
+            return ImageSource.FromFile("long_black.jpg");
         }
 
         private async Task OpenUrl(string url)

@@ -1,13 +1,15 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:TechnoPoss.ViewModels"
+             xmlns:local="clr-namespace:TechnoPoss"
+             xmlns:viewModels="clr-namespace:TechnoPoss.ViewModels"
              xmlns:converters="clr-namespace:TechnoPoss.Converters"
-             x:DataType="local:MainViewModel"
+             x:DataType="viewModels:MainViewModel"
              x:Class="TechnoPoss.MainPage"
              BackgroundColor="#1B1818">
 
     <ContentPage.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <local:BoolToMicTextConverter x:Key="BoolToMicTextConverter" />
     </ContentPage.Resources>
 
     <Grid RowDefinitions="*, Auto">
@@ -32,35 +34,65 @@
                               ItemsSource="{Binding Messages}"
                               Margin="0,15,0,20">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="local:Message">
+                        <DataTemplate x:DataType="viewModels:Message">
                             <Grid RowDefinitions="Auto, Auto" Margin="0,8">
                                 <!-- Сообщение пользователя -->
-                                <Border 
-                                    Padding="12"
-                                    BackgroundColor="#343434"
-                                    HorizontalOptions="End"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="0"
-                                    IsVisible="{Binding IsUserMessage}">
-                                    <Label Text="{Binding Text}" 
-                                         TextColor="White" 
-                                         MaximumWidthRequest="{OnPlatform Default=512, Android=256, iOS=256}" 
-                                         LineBreakMode="WordWrap"/>
+                                <Border Padding="12"
+                                        BackgroundColor="#343434"
+                                        HorizontalOptions="End"
+                                        StrokeShape="RoundRectangle 15"
+                                        StrokeThickness="0"
+                                        Margin="8,0,8,0"
+                                        IsVisible="{Binding IsUserMessage}">
+                                    <Grid>
+                                        <!-- Кнопка для аудио -->
+                                        <Button Text="▶ Play Audio"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainViewModel}}, Path=PlayAudioCommand}"
+                                                CommandParameter="{Binding AudioFilePath}"
+                                                BackgroundColor="#404040"
+                                                TextColor="White"
+                                                CornerRadius="10"
+                                                WidthRequest="150"
+                                                IsVisible="{Binding IsAudio}"/>
+                                        <!-- Текст для обычных сообщений -->
+                                        <Label Text="{Binding Text}" 
+                                               TextColor="White" 
+                                               MaximumWidthRequest="{OnPlatform Default=512, Android=256, iOS=256}" 
+                                               LineBreakMode="WordWrap"
+                                               IsVisible="{Binding IsAudio, Converter={x:Static converters:InverseBoolConverter.Instance}}"/>
+                                    </Grid>
                                 </Border>
 
                                 <!-- Ответ системы -->
-                                <Border 
-                                    Padding="12"
-                                    BackgroundColor="#343434"
-                                    HorizontalOptions="Start"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="0"
-                                    IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}">
-                                    <Label Text="{Binding Text}" 
-                                         TextColor="White"
-                                         MaximumWidthRequest="{OnPlatform Default=500, Android=270, iOS=270}"  
-                                         LineBreakMode="WordWrap"/>
-                                </Border>
+                                <Grid HorizontalOptions="Start"
+                                      IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}"
+                                      ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="8"
+                                      Margin="8,0,8,0">
+                                    <Image Source="profile_oposs.jpg"
+                                           Grid.Column="0"
+                                           WidthRequest="40"
+                                           HeightRequest="40"
+                                           Aspect="AspectFill">
+                                        <Image.Clip>
+                                            <EllipseGeometry Center="20,20"
+                                                             RadiusX="20"
+                                                             RadiusY="20"/>
+                                        </Image.Clip>
+                                    </Image>
+
+                                    <Border 
+                                        Grid.Column="1"
+                                        Padding="12"
+                                        BackgroundColor="#343434"
+                                        StrokeShape="RoundRectangle 15"
+                                        StrokeThickness="0">
+                                        <Label Text="{Binding Text}" 
+                                             TextColor="White"
+                                             MaximumWidthRequest="{OnPlatform Default=500, Android=270, iOS=270}"  
+                                             LineBreakMode="WordWrap"/>
+                                    </Border>
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -72,16 +104,15 @@
             </Grid>
         </ScrollView>
 
-        <!-- Фиксированная панель ввода -->
+        <!-- Панель ввода -->
         <Grid Grid.Row="1"
              ColumnDefinitions="*, Auto, Auto"
              Padding="15,10"
              BackgroundColor="#1B1818"
              RowSpacing="10"
              ColumnSpacing="10">
-
             <Entry x:Name="MessageEntry" 
-                 Placeholder="Введите сообщение..." 
+                 Placeholder="Message..." 
                  TextColor="White" 
                  BackgroundColor="#343434"
                  Text="{Binding MessageText, Mode=TwoWay}"
@@ -90,24 +121,24 @@
                  HeightRequest="50"/>
 
             <Button Grid.Column="1"
-                  Text="➜"
-                  Clicked="SendMessage_Clicked"
-                  BackgroundColor="#404040"
-                  TextColor="White"
-                  FontSize="16"
-                  CornerRadius="25"
-                  WidthRequest="50"
-                  HeightRequest="50"/>
+                    Text="➜"
+                    Command="{Binding SendMessageCommand}"
+                    BackgroundColor="#404040"
+                    TextColor="White"
+                    FontSize="16"
+                    CornerRadius="25"
+                    WidthRequest="50"
+                    HeightRequest="50"/>
 
             <Button Grid.Column="2"
-                  Text="🎙"
-                  Clicked="RecordVoice_Clicked"
-                  BackgroundColor="#404040"
-                  TextColor="White"
-                  FontSize="16"
-                  CornerRadius="25"
-                  WidthRequest="50"
-                  HeightRequest="50"/>
+                    Text="{Binding IsRecording, Converter={StaticResource BoolToMicTextConverter}, FallbackValue='🎙'}"
+                    Command="{Binding RecordVoiceCommand}"
+                    BackgroundColor="#404040"
+                    TextColor="White"
+                    FontSize="16"
+                    CornerRadius="25"
+                    WidthRequest="50"
+                    HeightRequest="50"/>
         </Grid>
     </Grid>
 </ContentPage>

@@ -10,8 +10,14 @@ namespace TechnoPoss.Services
     {
         private const string BaseUrl = "https://4pda.to";
         private readonly HtmlParser _htmlParser = new();
-
-        private const string DefaultImage = "opossum.jpg";
+        private readonly Random _random = new();
+        private readonly string[] _placeholderImages = {
+            "long_black.jpg",
+            "long_green.jpg",
+            "long_orange.jpg",
+            "long_pink.jpg",
+            "long_violet.jpg"
+        };
 
         private class Section
         {
@@ -66,7 +72,6 @@ namespace TechnoPoss.Services
             }
 
             var articles = articleContainer.QuerySelectorAll(".post.ufjEON");
-
             var newsItems = new List<NewsItem>();
 
             foreach (var article in articles.Where(a => HasAllowedTags(a, allowedTags)))
@@ -93,13 +98,22 @@ namespace TechnoPoss.Services
         private string ExtractImageUrl(IElement article)
         {
             var previewContainer = article.QuerySelector(".WHalBy9w");
-            if (previewContainer == null) return DefaultImage;
+            if (previewContainer == null)
+            {
+                return _placeholderImages[_random.Next(_placeholderImages.Length)];
+            }
 
             var imgElement = previewContainer.QuerySelector("img");
-            if (imgElement == null) return DefaultImage;
+            if (imgElement == null)
+            {
+                return _placeholderImages[_random.Next(_placeholderImages.Length)];
+            }
 
             var src = imgElement.GetAttribute("src");
-            if (string.IsNullOrWhiteSpace(src)) return DefaultImage;
+            if (string.IsNullOrWhiteSpace(src))
+            {
+                return _placeholderImages[_random.Next(_placeholderImages.Length)];
+            }
 
             return src.StartsWith("http") ? src : $"{BaseUrl}{src}";
         }
@@ -152,7 +166,7 @@ namespace TechnoPoss.Services
             }
 
             text = WebUtility.HtmlDecode(text);
-            text = Regex.Replace(text, @"\s+", " ");
+            text = Regex.Replace(text, "\\s+", " ");
             return text.Length > 250 ? $"{text[..250]}..." : text;
         }
 
