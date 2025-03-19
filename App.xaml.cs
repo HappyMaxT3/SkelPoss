@@ -1,15 +1,20 @@
-﻿namespace TechnoPoss
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui.Controls;
+
+namespace TechnoPoss
 {
     public partial class App : Application
     {
-        public App()
+        public App(IServiceProvider serviceProvider)
         {
             InitializeComponent();
-        }
+            MainPage = serviceProvider.GetRequiredService<AppShell>();
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                var exception = args.ExceptionObject as Exception;
+                System.Diagnostics.Debug.WriteLine($"Unhandled exception: {exception?.ToString()}");
+            };
         }
     }
 }

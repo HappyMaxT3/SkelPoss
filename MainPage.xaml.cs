@@ -1,30 +1,14 @@
-﻿using TechnoPoss.ViewModels;
+﻿using System.Globalization;
+using TechnoPoss.ViewModels;
 
 namespace TechnoPoss;
 
 public partial class MainPage : ContentPage
 {
-    public MainViewModel ViewModel { get; set; }
-
-    public MainPage()
+    public MainPage(MainViewModel viewModel)
     {
         InitializeComponent();
-        ViewModel = new MainViewModel();
-        BindingContext = ViewModel;
-    }
-
-    private void SendMessage_Clicked(object sender, EventArgs e)
-    {
-        if (!string.IsNullOrWhiteSpace(MessageEntry.Text))
-        {
-            ViewModel.SendMessage();
-            MessageEntry.Text = "";
-        }
-    }
-
-    private void RecordVoice_Clicked(object sender, EventArgs e)
-    {
-        ViewModel.RecordVoice();
+        BindingContext = viewModel;
     }
 
     private void OnSwiped(object sender, SwipedEventArgs e)
@@ -34,4 +18,13 @@ public partial class MainPage : ContentPage
             Shell.Current.FlyoutIsPresented = true;
         }
     }
+}
+
+public class BoolToMicTextConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => (value as bool?) == true ? "■" : "🎙";
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
 }

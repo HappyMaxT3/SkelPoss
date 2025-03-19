@@ -19,11 +19,9 @@
 
     <Shell.TitleView>
         <Grid>
-
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-
             <Label Text="TECHNOPOSS"
                    FontFamily="TitleOposs"
                    FontSize="20"
@@ -42,5 +40,4 @@
     <FlyoutItem Title="📢 News">
         <ShellContent ContentTemplate="{DataTemplate local:NewsPage}" />
     </FlyoutItem>
-
 </Shell>

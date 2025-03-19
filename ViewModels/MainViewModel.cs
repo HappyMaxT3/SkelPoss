@@ -1,11 +1,14 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Input;
+using TechnoPoss.Services;
 
 namespace TechnoPoss.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        private readonly IAudioRecorder _audioRecorder;
         public ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
         private string? _messageText;
@@ -19,30 +22,57 @@ namespace TechnoPoss.ViewModels
             }
         }
 
-        public void SendMessage()
+        public bool IsRecording => _audioRecorder.IsRecording;
+
+        public ICommand SendMessageCommand { get; }
+        public ICommand RecordVoiceCommand { get; }
+
+        public MainViewModel(IAudioRecorder audioRecorder)
+        {
+            _audioRecorder = audioRecorder ?? throw new ArgumentNullException(nameof(audioRecorder));
+            SendMessageCommand = new Command(SendMessage);
+            RecordVoiceCommand = new Command(async () => await RecordVoiceAsync());
+        }
+
+        private void SendMessage()
         {
             if (!string.IsNullOrWhiteSpace(MessageText))
             {
-                // Сообщение от пользователя
                 Messages.Add(new Message { Text = MessageText, IsUserMessage = true });
+                Messages.Add(new Message { Text = "✅ Сообщение принято! Это ответ.", IsUserMessage = false });
                 MessageText = "";
                 OnPropertyChanged(nameof(MessageText));
-
-                // Ответное сообщение от модели
-                Messages.Add(new Message { Text = "✅ Сообщение принято! Это ответ.", IsUserMessage = false });
             }
         }
 
-        public void RecordVoice()
+        private async Task RecordVoiceAsync()
         {
-            // Сообщение от пользователя (голосовое)
-            Messages.Add(new Message { Text = "🎤 Голосовое сообщение записано (расшифровка)!", IsUserMessage = true });
-
-            MessageText = "";
-            OnPropertyChanged(nameof(MessageText));
-
-            // Ответное сообщение от модели
-            Messages.Add(new Message { Text = "✅ Голосовое сообщение принято! Это ответ.", IsUserMessage = false });
+            try
+            {
+                if (!IsRecording)
+                {
+                    await _audioRecorder.StartRecordingAsync();
+                    OnPropertyChanged(nameof(IsRecording));
+                }
+                else
+                {
+                    var filePath = await _audioRecorder.StopRecordingAsync();
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        Messages.Add(new Message { Text = $"🎤 Голосовое сообщение записано: {Path.GetFileName(filePath)}", IsUserMessage = true });
+                        Messages.Add(new Message { Text = "✅ Голосовое сообщение принято! Это ответ.", IsUserMessage = false });
+                    }
+                    OnPropertyChanged(nameof(IsRecording));
+                }
+            }
+            catch (PermissionException ex)
+            {
+                Messages.Add(new Message { Text = $"Ошибка: {ex.Message}", IsUserMessage = false });
+            }
+            catch (Exception ex)
+            {
+                Messages.Add(new Message { Text = $"Ошибка записи: {ex.Message}", IsUserMessage = false });
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -50,15 +80,5 @@ namespace TechnoPoss.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-    }
-
-    public class Message
-    {
-        public string Text { get; set; } = string.Empty;
-        public bool IsUserMessage { get; set; } 
-        public bool IsProduct { get; set; }
-        public string ProductName { get; set; } = string.Empty;
-        public string ProductDetails { get; set; } = string.Empty;
-        public string ProductImage { get; set; } = string.Empty;
     }
 }
