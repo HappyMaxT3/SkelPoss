@@ -3,10 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechnoPoss.NewsPage"
              BackgroundColor="#1B1818">
-
     <ScrollView x:Name="MainScroll">
         <StackLayout Padding="10">
-            <!-- Жесты свайпа для всей области -->
+            <!-- Жесты свайпа -->
             <StackLayout.GestureRecognizers>
                 <SwipeGestureRecognizer Direction="Down" Swiped="OnSwiped"/>
                 <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped"/>
@@ -17,26 +16,28 @@
                    FontSize="24" 
                    FontAttributes="Bold" 
                    TextColor="White" />
-
             <Label Text="📢 Latest news and articles..." 
                    TextColor="#A0A0A0" />
 
             <!-- Индикатор загрузки -->
-        <ActivityIndicator x:Name="LoadingIndicator"
-                          IsVisible="False"
-                          IsRunning="False"
-                          Color="White"
-                          HorizontalOptions="Center"
-                          VerticalOptions="Center"
-                          HeightRequest="50"
-                          WidthRequest="50"/>
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsVisible="False"
+                               IsRunning="False"
+                               Color="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               HeightRequest="50"
+                               WidthRequest="50"/>
 
-            <!-- Контейнер для новостей -->
-            <StackLayout x:Name="NewsContainer" 
-                         Spacing="10"
-                         VerticalOptions="Start"/>
-
+            <!-- Контейнер для новостей с адаптивной шириной -->
+            <Grid HorizontalOptions="Center"
+                  WidthRequest="{Binding Source={x:Reference MainScroll}, Path=Width}"
+                  MaximumWidthRequest="{OnPlatform Default=-1, WinUI=800, MacCatalyst=800}">
+                <StackLayout x:Name="NewsContainer" 
+                             Spacing="10"
+                             VerticalOptions="Start"
+                             HorizontalOptions="Fill"/>
+            </Grid>
         </StackLayout>
     </ScrollView>
-
 </ContentPage>
