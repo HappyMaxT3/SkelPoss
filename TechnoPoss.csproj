@@ -81,7 +81,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Resources\Images\" />
 	  <Folder Include="Converters" />
 	</ItemGroup>
 

@@ -11,7 +11,13 @@ namespace TechnoPoss.Services
         private const string BaseUrl = "https://habr.com";
         private readonly HtmlParser _htmlParser;
         private readonly Random _random = new();
-        private readonly string[] _placeholderImages = { "opossum.jpg" };
+        private readonly string[] _placeholderImages = {
+            "long_black.jpg",
+            "long_green.jpg",
+            "long_orange.jpg",
+            "long_pink.jpg",
+            "long_violet.jpg"
+        };
 
         private readonly string[] _targetFlows =
         {

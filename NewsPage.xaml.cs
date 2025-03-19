@@ -194,7 +194,7 @@ namespace TechnoPoss
 
         private ImageSource GetFallbackImage()
         {
-            return ImageSource.FromFile("opossum1.jpg");
+            return ImageSource.FromFile("long_black.jpg");
         }
 
         private async Task OpenUrl(string url)
