@@ -49,18 +49,36 @@
                                 </Border>
 
                                 <!-- Ответ системы -->
-                                <Border 
-                                    Padding="12"
-                                    BackgroundColor="#343434"
-                                    HorizontalOptions="Start"
-                                    StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="0"
-                                    IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}">
-                                    <Label Text="{Binding Text}" 
-                                         TextColor="White"
-                                         MaximumWidthRequest="{OnPlatform Default=500, Android=270, iOS=270}"  
-                                         LineBreakMode="WordWrap"/>
-                                </Border>
+                                <Grid HorizontalOptions="Start"
+                                      IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}"
+                                      ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="8"
+                                      Margin="8,0,0,0">
+
+                                    <Image Source="profile_oposs.jpg"
+                                           Grid.Column="0"
+                                           WidthRequest="40"
+                                           HeightRequest="40"
+                                           Aspect="AspectFill">
+                                        <Image.Clip>
+                                            <EllipseGeometry Center="20,20"
+                                                             RadiusX="20"
+                                                             RadiusY="20"/>
+                                        </Image.Clip>
+                                    </Image>
+
+                                    <Border 
+                                        Grid.Column="1"
+                                        Padding="12"
+                                        BackgroundColor="#343434"
+                                        StrokeShape="RoundRectangle 15"
+                                        StrokeThickness="0">
+                                        <Label Text="{Binding Text}" 
+                                             TextColor="White"
+                                             MaximumWidthRequest="{OnPlatform Default=500, Android=270, iOS=270}"  
+                                             LineBreakMode="WordWrap"/>
+                                    </Border>
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
@@ -72,7 +90,7 @@
             </Grid>
         </ScrollView>
 
-        <!-- Фиксированная панель ввода -->
+        <!-- Панель ввода -->
         <Grid Grid.Row="1"
              ColumnDefinitions="*, Auto, Auto"
              Padding="15,10"
@@ -81,7 +99,7 @@
              ColumnSpacing="10">
 
             <Entry x:Name="MessageEntry" 
-                 Placeholder="Введите сообщение..." 
+                 Placeholder="Message..." 
                  TextColor="White" 
                  BackgroundColor="#343434"
                  Text="{Binding MessageText, Mode=TwoWay}"
