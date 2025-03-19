@@ -41,6 +41,7 @@
                                     HorizontalOptions="End"
                                     StrokeShape="RoundRectangle 15"
                                     StrokeThickness="0"
+                                    Margin="8,0,8,0"
                                     IsVisible="{Binding IsUserMessage}">
                                     <Label Text="{Binding Text}" 
                                          TextColor="White" 
@@ -53,7 +54,7 @@
                                       IsVisible="{Binding IsUserMessage, Converter={x:Static converters:InverseBoolConverter.Instance}}"
                                       ColumnDefinitions="Auto,*"
                                       ColumnSpacing="8"
-                                      Margin="8,0,0,0">
+                                      Margin="8,0,8,0">
 
                                     <Image Source="profile_oposs.jpg"
                                            Grid.Column="0"

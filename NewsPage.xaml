@@ -36,7 +36,8 @@
                 <StackLayout x:Name="NewsContainer" 
                              Spacing="10"
                              VerticalOptions="Start"
-                             HorizontalOptions="Fill"/>
+                             HorizontalOptions="Fill"
+                             Margin="12,2,12,0"/>
             </Grid>
         </StackLayout>
     </ScrollView>
