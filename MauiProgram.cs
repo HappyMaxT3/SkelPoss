@@ -25,10 +25,12 @@ namespace TechnoPoss
 
 #if ANDROID
             builder.Services.AddSingleton<IAudioRecorder, TechnoPoss.Platforms.Android.AudioRecorder>();
+            builder.Services.AddSingleton<IAudioPlayer, TechnoPoss.Platforms.Android.AudioPlayer>();
 #elif MACCATALYST
             builder.Services.AddSingleton<IAudioRecorder, TechnoPoss.Platforms.MacCatalyst.AudioRecorder>();
 #elif WINDOWS
             builder.Services.AddSingleton<IAudioRecorder, TechnoPoss.Platforms.Windows.AudioRecorder>();
+            builder.Services.AddSingleton<IAudioPlayer, TechnoPoss.Platforms.Windows.AudioPlayer>();
 #else
             builder.Services.AddSingleton<IAudioRecorder, UnsupportedPlatformAudioRecorder>();
 #endif

@@ -9,6 +9,7 @@ namespace TechnoPoss.ViewModels
     public class MainViewModel : INotifyPropertyChanged
     {
         private readonly IAudioRecorder _audioRecorder;
+        private readonly IAudioPlayer _audioPlayer;
         public ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
         private string? _messageText;
@@ -26,12 +27,15 @@ namespace TechnoPoss.ViewModels
 
         public ICommand SendMessageCommand { get; }
         public ICommand RecordVoiceCommand { get; }
+        public ICommand PlayAudioCommand { get; } 
 
-        public MainViewModel(IAudioRecorder audioRecorder)
+        public MainViewModel(IAudioRecorder audioRecorder, IAudioPlayer audioPlayer)
         {
             _audioRecorder = audioRecorder ?? throw new ArgumentNullException(nameof(audioRecorder));
+            _audioPlayer = audioPlayer ?? throw new ArgumentNullException(nameof(audioPlayer));
             SendMessageCommand = new Command(SendMessage);
             RecordVoiceCommand = new Command(async () => await RecordVoiceAsync());
+            PlayAudioCommand = new Command<string>(PlayAudio);
         }
 
         private void SendMessage()
@@ -59,7 +63,12 @@ namespace TechnoPoss.ViewModels
                     var filePath = await _audioRecorder.StopRecordingAsync();
                     if (!string.IsNullOrEmpty(filePath))
                     {
-                        Messages.Add(new Message { Text = $"🎤 Голосовое сообщение записано: {Path.GetFileName(filePath)}", IsUserMessage = true });
+                        Messages.Add(new Message
+                        {
+                            IsUserMessage = true,
+                            IsAudio = true,
+                            AudioFilePath = filePath // Сохраняем путь для воспроизведения
+                        });
                         Messages.Add(new Message { Text = "✅ Голосовое сообщение принято! Это ответ.", IsUserMessage = false });
                     }
                     OnPropertyChanged(nameof(IsRecording));
@@ -72,6 +81,18 @@ namespace TechnoPoss.ViewModels
             catch (Exception ex)
             {
                 Messages.Add(new Message { Text = $"Ошибка записи: {ex.Message}", IsUserMessage = false });
+            }
+        }
+
+        private void PlayAudio(string filePath)
+        {
+            try
+            {
+                _audioPlayer.Play(filePath);
+            }
+            catch (Exception ex)
+            {
+                Messages.Add(new Message { Text = $"Ошибка воспроизведения: {ex.Message}", IsUserMessage = false });
             }
         }
 
