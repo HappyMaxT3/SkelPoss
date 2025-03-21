@@ -12,10 +12,9 @@
                                   Swiped="OnSwiped"/>
         </Grid.GestureRecognizers>
         
-        <!-- Основной контент с прокруткой -->
         <ScrollView>
             <VerticalStackLayout Spacing="20">
-                <!-- Блок с разработчиками -->
+
                 <FlexLayout Direction="Row"
                           Wrap="Wrap"
                           JustifyContent="Center"
@@ -30,7 +29,6 @@
                                 HorizontalOptions="Center" 
                                 VerticalOptions="Start">
 
-                                <!-- Круглая фотография -->
                                 <Frame 
                                     WidthRequest="150"
                                     HeightRequest="150"
@@ -47,7 +45,6 @@
                                         HeightRequest="150"/>
                                 </Frame>
 
-                                <!-- Подпись -->
                                 <Label 
                                     Text="{Binding Name}"
                                     FontSize="16"
@@ -66,7 +63,6 @@
                     </BindableLayout.ItemTemplate>
                 </FlexLayout>
 
-                <!-- Блок О проекте -->
                 <VerticalStackLayout Spacing="15" 
                                    HorizontalOptions="Center" 
                                    Padding="20,0">

@@ -86,7 +86,7 @@
                                             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                                    Text="{Binding Text}" 
                                                    TextColor="White"
-                                                   MaximumWidthRequest="{OnPlatform Default=500, Android=270, iOS=270}"  
+                                                   MaximumWidthRequest="{OnPlatform Default=600, Android=270, iOS=270}"  
                                                    LineBreakMode="WordWrap"/>
                                             <!-- Кнопка Play -->
                                             <Button Grid.Row="1" Grid.Column="1"
@@ -122,14 +122,25 @@
               BackgroundColor="#1B1818"
               RowSpacing="10"
               ColumnSpacing="10">
-            <Entry x:Name="MessageEntry" 
-                   Placeholder="Message..." 
-                   TextColor="White" 
-                   BackgroundColor="#343434"
-                   Text="{Binding MessageText, Mode=TwoWay}"
-                   ClearButtonVisibility="WhileEditing"
-                   FontSize="14"
-                   HeightRequest="50"/>
+            <Border StrokeShape="RoundRectangle 15"
+                    Stroke="#343434"
+                    BackgroundColor="#343434"
+                    Padding="5">
+                <Border.Shadow>
+                    <Shadow Brush="#000000"
+                    Offset="2,2"
+                    Radius="10"
+                    Opacity="0.5"/>
+                </Border.Shadow>
+                <Editor x:Name="MessageEntry" 
+                        Placeholder="Message..." 
+                        TextColor="White" 
+                        BackgroundColor="Transparent"
+                        Text="{Binding MessageText, Mode=TwoWay}"
+                        FontSize="14"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="40"/>
+            </Border>
 
             <Button Grid.Column="1"
                     Text="➜"
@@ -140,6 +151,7 @@
                     CornerRadius="25"
                     WidthRequest="50"
                     HeightRequest="50"/>
+            
 
             <Button Grid.Column="2"
                     Text="{Binding IsRecording, Converter={StaticResource BoolToMicTextConverter}, FallbackValue='🎙'}"
