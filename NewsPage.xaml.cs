@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Networking;
 using TechnoPoss.Services;
 using System;
 using System.Collections.Generic;
@@ -58,8 +59,44 @@ namespace TechnoPoss
             try
             {
                 SetLoadingState(true);
-                _allNews = await _newsParser.ParseNewsAsync();
-                ResetNewsView();
+
+                // Проверка интернета
+                if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+                {
+                    Dispatcher.Dispatch(() =>
+                    {
+                        NewsContainer.Children.Clear();
+                        NewsContainer.Children.Add(CreateNoInternetCard());
+                    });
+                }
+                else
+                {
+                    try
+                    {
+                        var newsItems = await _newsParser.ParseNewsAsync();
+                        if (newsItems == null || newsItems.Count == 0)
+                        {
+                            Dispatcher.Dispatch(() =>
+                            {
+                                NewsContainer.Children.Clear();
+                                NewsContainer.Children.Add(CreateNoInternetCard());
+                            });
+                        }
+                        else
+                        {
+                            _allNews = newsItems;
+                            ResetNewsView();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Dispatcher.Dispatch(() =>
+                        {
+                            NewsContainer.Children.Clear();
+                            NewsContainer.Children.Add(CreateNoInternetCard());
+                        });
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -171,11 +208,73 @@ namespace TechnoPoss
 
             if (DeviceInfo.Platform == DevicePlatform.WinUI || DeviceInfo.Platform == DevicePlatform.macOS)
             {
-                newsCard.MaximumWidthRequest = 700;
-                newsCard.HorizontalOptions = LayoutOptions.Center; 
+                newsCard.MaximumWidthRequest = 650;
+                newsCard.HorizontalOptions = LayoutOptions.Center;
             }
 
             NewsContainer.Children.Add(newsCard);
+        }
+
+        private Frame CreateNoInternetCard()
+        {
+            var noInternetCard = new Frame
+            {
+                BorderColor = Colors.Transparent,
+                BackgroundColor = Color.FromArgb("#2D2D2D"),
+                Padding = 15,
+                CornerRadius = 12,
+                HasShadow = true,
+                MaximumWidthRequest = (DeviceInfo.Platform == DevicePlatform.WinUI || DeviceInfo.Platform == DevicePlatform.macOS) ? 600 : double.PositiveInfinity,
+                HorizontalOptions = LayoutOptions.Center,
+                Content = new VerticalStackLayout
+                {
+                    Spacing = 8,
+                    Children =
+                    {
+                        new Frame
+                        {
+                            CornerRadius = 10,
+                            IsClippedToBounds = true,
+                            Padding = 0,
+                            Margin = 0,
+                            BorderColor = Colors.Transparent,
+                            BackgroundColor = Colors.Transparent,
+                            Content = new Image
+                            {
+                                Source = ImageSource.FromFile("long_black.jpg"),
+                                Aspect = Aspect.AspectFill,
+                                HeightRequest = 200,
+                                HorizontalOptions = LayoutOptions.Fill,
+                                Margin = 0
+                            }
+                        },
+                        new Label
+                        {
+                            Text = "🔴 No internet",
+                            FontSize = 12,
+                            TextColor = Colors.Red,
+                            HorizontalOptions = LayoutOptions.Start
+                        },
+                        new Label
+                        {
+                            Text = "Нет подключения к интернету",
+                            FontSize = 18,
+                            FontAttributes = FontAttributes.Bold,
+                            TextColor = Colors.White,
+                            MaxLines = 6
+                        },
+                        new Label
+                        {
+                            Text = "Проверьте подключение и попробуйте снова.",
+                            FontSize = 14,
+                            TextColor = Color.FromArgb("#CCCCCC"),
+                            MaxLines = 9
+                        }
+                    }
+                }
+            };
+
+            return noInternetCard;
         }
 
         private ImageSource GetImageSource(string imageUrl)
@@ -239,8 +338,45 @@ namespace TechnoPoss
             try
             {
                 SetLoadingState(true);
-                _allNews = await _newsParser.ParseNewsAsync();
-                ResetNewsView();
+
+                // Проверка интернета и загрузка новостей при обновлении
+                if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+                {
+                    Dispatcher.Dispatch(() =>
+                    {
+                        NewsContainer.Children.Clear();
+                        NewsContainer.Children.Add(CreateNoInternetCard());
+                    });
+                }
+                else
+                {
+                    try
+                    {
+                        var newsItems = await _newsParser.ParseNewsAsync();
+                        if (newsItems == null || newsItems.Count == 0)
+                        {
+                            Dispatcher.Dispatch(() =>
+                            {
+                                NewsContainer.Children.Clear();
+                                NewsContainer.Children.Add(CreateNoInternetCard());
+                            });
+                        }
+                        else
+                        {
+                            _allNews = newsItems;
+                            ResetNewsView();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Dispatcher.Dispatch(() =>
+                        {
+                            NewsContainer.Children.Clear();
+                            NewsContainer.Children.Add(CreateNoInternetCard());
+                        });
+                    }
+                }
+
                 await Task.Delay(500);
             }
             catch (Exception ex)
