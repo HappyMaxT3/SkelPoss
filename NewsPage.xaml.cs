@@ -75,7 +75,10 @@ namespace TechnoPoss
         {
             Dispatcher.Dispatch(() =>
             {
-                NewsContainer.Children.Clear();
+                while (NewsContainer.Children.Count > 2)
+                {
+                    NewsContainer.Children.RemoveAt(2);
+                }
                 _currentPage = 0;
                 DisplayNewsPage();
             });
@@ -111,60 +114,66 @@ namespace TechnoPoss
                 {
                     Spacing = 8,
                     Children =
-            {
-                new Frame
-                {
-                    CornerRadius = 10,
-                    IsClippedToBounds = true,
-                    Padding = 0,
-                    Margin = 0,
-                    BorderColor = Colors.Transparent,
-                    BackgroundColor = Colors.Transparent,
-                    Content = new Image
                     {
-                        Source = imageSource,
-                        Aspect = Aspect.AspectFill,
-                        HeightRequest = 200,
-                        HorizontalOptions = LayoutOptions.Fill,
-                        Margin = 0,
-                        IsVisible = imageSource != null
+                        new Frame
+                        {
+                            CornerRadius = 10,
+                            IsClippedToBounds = true,
+                            Padding = 0,
+                            Margin = 0,
+                            BorderColor = Colors.Transparent,
+                            BackgroundColor = Colors.Transparent,
+                            Content = new Image
+                            {
+                                Source = imageSource,
+                                Aspect = Aspect.AspectFill,
+                                HeightRequest = 200,
+                                HorizontalOptions = LayoutOptions.Fill,
+                                Margin = 0,
+                                IsVisible = imageSource != null
+                            }
+                        },
+                        new Label
+                        {
+                            Text = $"🔗 {item.Source}",
+                            FontSize = 12,
+                            TextColor = Color.FromArgb(item.SourceColor),
+                            HorizontalOptions = LayoutOptions.Start
+                        },
+                        new Label
+                        {
+                            Text = item.Title,
+                            FontSize = 18,
+                            FontAttributes = FontAttributes.Bold,
+                            TextColor = Colors.White,
+                            MaxLines = 6
+                        },
+                        new Label
+                        {
+                            Text = item.Content,
+                            FontSize = 14,
+                            TextColor = Color.FromArgb("#CCCCCC"),
+                            MaxLines = 9
+                        },
+                        new Button
+                        {
+                            Text = "Читать →",
+                            TextColor = Colors.White,
+                            BackgroundColor = Color.FromArgb("#2D2D2D"),
+                            CornerRadius = 6,
+                            Padding = new Thickness(12, 6),
+                            HorizontalOptions = LayoutOptions.End,
+                            Command = new Command(async () => await OpenUrl(item.Url))
+                        }
                     }
-                },
-                new Label
-                {
-                    Text = $"🔗 {item.Source}",
-                    FontSize = 12,
-                    TextColor = Color.FromArgb(item.SourceColor),
-                    HorizontalOptions = LayoutOptions.Start
-                },
-                new Label
-                {
-                    Text = item.Title,
-                    FontSize = 18,
-                    FontAttributes = FontAttributes.Bold,
-                    TextColor = Colors.White,
-                    MaxLines = 6
-                },
-                new Label
-                {
-                    Text = item.Content,
-                    FontSize = 14,
-                    TextColor = Color.FromArgb("#CCCCCC"),
-                    MaxLines = 9
-                },
-                new Button
-                {
-                    Text = "Читать →",
-                    TextColor = Colors.White,
-                    BackgroundColor = Color.FromArgb("#2D2D2D"),
-                    CornerRadius = 6,
-                    Padding = new Thickness(12, 6),
-                    HorizontalOptions = LayoutOptions.End,
-                    Command = new Command(async () => await OpenUrl(item.Url))
-                }
-            }
                 }
             };
+
+            if (DeviceInfo.Platform == DevicePlatform.WinUI || DeviceInfo.Platform == DevicePlatform.macOS)
+            {
+                newsCard.MaximumWidthRequest = 700;
+                newsCard.HorizontalOptions = LayoutOptions.Center; 
+            }
 
             NewsContainer.Children.Add(newsCard);
         }
