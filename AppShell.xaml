@@ -40,4 +40,8 @@
     <FlyoutItem Title="📢 News">
         <ShellContent ContentTemplate="{DataTemplate local:NewsPage}" />
     </FlyoutItem>
+
+    <FlyoutItem Title="🧑🏻‍💻 Developers">
+        <ShellContent ContentTemplate="{DataTemplate local:AboutPage}" />
+    </FlyoutItem>
 </Shell>

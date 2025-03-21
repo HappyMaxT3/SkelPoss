@@ -18,13 +18,13 @@
                 <!-- Заголовок -->
                 <VerticalStackLayout Grid.Row="0"
                                      Margin="10,10">
-                    <Label Text="Chat" 
-                           FontSize="24" 
-                           FontAttributes="Bold" 
-                           TextColor="White"/>
-                    <Label Text="🔎 Looking for techs..." 
-                           TextColor="#A0A0A0"
-                           FontSize="14"/>
+                                    <Label Text="Chat" 
+                                           FontSize="24" 
+                                           FontAttributes="Bold" 
+                                           TextColor="White"/>
+                                    <Label Text="🔎 Looking for techs..." 
+                                           TextColor="#A0A0A0"
+                                           FontSize="14"/>
                 </VerticalStackLayout>
 
                 <!-- Список сообщений -->
@@ -41,7 +41,7 @@
                                         HorizontalOptions="End"
                                         StrokeShape="RoundRectangle 15"
                                         StrokeThickness="0"
-                                        Margin="8,0,8,0"
+                                        Margin="8,8,8,0"
                                         IsVisible="{Binding IsUserMessage}">
                                     <Grid>
                                         <Label Text="{Binding Text}" 
@@ -65,7 +65,7 @@
                                       IsVisible="{Binding IsUserMessage, Converter={StaticResource InverseBoolConverter}}"
                                       ColumnDefinitions="Auto,*"
                                       ColumnSpacing="8"
-                                      Margin="8,0,8,0">
+                                      Margin="8,8,8,0">
                                     <Image Source="profile_oposs.jpg"
                                            Grid.Column="0"
                                            WidthRequest="40"
@@ -96,9 +96,9 @@
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainViewModel}}, Path=PlayAudioCommand}"
                                                     CommandParameter="{Binding AudioFilePath}"
                                                     BackgroundColor="Transparent"
-                                                    TextColor="#A0A0A0"
-                                                    WidthRequest="15"
-                                                    HeightRequest="15"
+                                                    TextColor="White"
+                                                    WidthRequest="30"
+                                                    HeightRequest="30"
                                                     HorizontalOptions="End"
                                                     VerticalOptions="End"/>
                                         </Grid>
