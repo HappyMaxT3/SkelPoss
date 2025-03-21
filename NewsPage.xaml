@@ -29,16 +29,10 @@
                                HeightRequest="50"
                                WidthRequest="50"/>
 
-            <!-- Контейнер для новостей с адаптивной шириной -->
-            <Grid HorizontalOptions="Center"
-                  WidthRequest="{Binding Source={x:Reference MainScroll}, Path=Width}"
-                  MaximumWidthRequest="{OnPlatform Default=-1, WinUI=800, MacCatalyst=800}">
-                <StackLayout x:Name="NewsContainer" 
-                             Spacing="10"
-                             VerticalOptions="Start"
-                             HorizontalOptions="Fill"
-                             Margin="12,2,12,0"/>
-            </Grid>
+            <!-- Контейнер для новостей -->
+            <StackLayout x:Name="NewsContainer" 
+                         Spacing="10"
+                         VerticalOptions="Start"/>
         </StackLayout>
     </ScrollView>
 </ContentPage>
