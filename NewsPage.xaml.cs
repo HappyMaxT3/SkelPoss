@@ -10,7 +10,7 @@ namespace TechnoPoss
     public partial class NewsPage : ContentPage
     {
         private const int PageSize = 3;
-        private const int MaxNewsCards = 40; 
+        private const int MaxNewsCards = 40;
         private int _currentPage = 0;
         private List<NewsItem> _allNews = new();
         private bool _isLoading;
@@ -45,7 +45,7 @@ namespace TechnoPoss
                         {
                             await Task.Delay(loadDelay);
 
-                            int currentCardCount = NewsContainer.Children.Count - 2; 
+                            int currentCardCount = NewsContainer.Children.Count - 2;
                             if (currentCardCount >= MaxNewsCards)
                             {
                                 await MainScroll.ScrollToAsync(0, 0, true);
@@ -275,7 +275,7 @@ namespace TechnoPoss
                         },
                         new Label
                         {
-                            Text = "Проверьте подключение и попробуйте снова.",
+                            Text = "Проверьте подключение и попробуйте снова. Перезагрузите страницу.",
                             FontSize = 14,
                             TextColor = Color.FromArgb("#CCCCCC"),
                             MaxLines = 9
@@ -355,8 +355,12 @@ namespace TechnoPoss
                 {
                     Dispatcher.Dispatch(() =>
                     {
-                        NewsContainer.Children.Clear();
-                        NewsContainer.Children.Add(CreateNoInternetCard());
+                        if (NewsContainer.Children.Count <= 2 ||
+                            !(NewsContainer.Children.Last() is Frame frame && frame.Content is VerticalStackLayout stack && stack.Children.Any(c => c is Label lbl && lbl.Text == "Нет подключения к интернету")))
+                        {
+                            NewsContainer.Children.Clear();
+                            NewsContainer.Children.Add(CreateNoInternetCard());
+                        }
                     });
                 }
                 else
@@ -368,22 +372,34 @@ namespace TechnoPoss
                         {
                             Dispatcher.Dispatch(() =>
                             {
-                                NewsContainer.Children.Clear();
-                                NewsContainer.Children.Add(CreateNoInternetCard());
+                                if (NewsContainer.Children.Count <= 2 ||
+                                    !(NewsContainer.Children.Last() is Frame frame && frame.Content is VerticalStackLayout stack && stack.Children.Any(c => c is Label lbl && lbl.Text == "Нет подключения к интернету")))
+                                {
+                                    NewsContainer.Children.Clear();
+                                    NewsContainer.Children.Add(CreateNoInternetCard());
+                                }
                             });
                         }
                         else
                         {
                             _allNews = newsItems;
-                            ResetNewsView();
+                            Dispatcher.Dispatch(() =>
+                            {
+                                NewsContainer.Children.Clear();
+                                ResetNewsView();
+                            });
                         }
                     }
                     catch (Exception)
                     {
                         Dispatcher.Dispatch(() =>
                         {
-                            NewsContainer.Children.Clear();
-                            NewsContainer.Children.Add(CreateNoInternetCard());
+                            if (NewsContainer.Children.Count <= 2 ||
+                                !(NewsContainer.Children.Last() is Frame frame && frame.Content is VerticalStackLayout stack && stack.Children.Any(c => c is Label lbl && lbl.Text == "Нет подключения к интернету")))
+                            {
+                                NewsContainer.Children.Clear();
+                                NewsContainer.Children.Add(CreateNoInternetCard());
+                            }
                         });
                     }
                 }
