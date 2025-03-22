@@ -10,6 +10,7 @@ namespace TechnoPoss
     public partial class NewsPage : ContentPage
     {
         private const int PageSize = 3;
+        private const int MaxNewsCards = 40; 
         private int _currentPage = 0;
         private List<NewsItem> _allNews = new();
         private bool _isLoading;
@@ -43,7 +44,17 @@ namespace TechnoPoss
                         try
                         {
                             await Task.Delay(loadDelay);
-                            DisplayNewsPage();
+
+                            int currentCardCount = NewsContainer.Children.Count - 2; 
+                            if (currentCardCount >= MaxNewsCards)
+                            {
+                                await MainScroll.ScrollToAsync(0, 0, true);
+                                await RefreshNews();
+                            }
+                            else
+                            {
+                                DisplayNewsPage();
+                            }
                         }
                         finally
                         {
@@ -324,7 +335,6 @@ namespace TechnoPoss
             {
                 OpenSideMenu();
             }
-            // Убрана обработка SwipeDirection.Down
         }
 
         private async void OnRefreshButtonClicked(object sender, EventArgs e)
