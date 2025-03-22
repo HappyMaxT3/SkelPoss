@@ -60,7 +60,6 @@ namespace TechnoPoss
             {
                 SetLoadingState(true);
 
-                // Проверка интернета
                 if (Connectivity.NetworkAccess != NetworkAccess.Internet)
                 {
                     Dispatcher.Dispatch(() =>
@@ -321,25 +320,27 @@ namespace TechnoPoss
 
         private void OnSwiped(object sender, SwipedEventArgs e)
         {
-            switch (e.Direction)
+            if (e.Direction == SwipeDirection.Right)
             {
-                case SwipeDirection.Down:
-                    if (!_isLoading)
-                        RefreshNews();
-                    break;
-                case SwipeDirection.Right:
-                    OpenSideMenu();
-                    break;
+                OpenSideMenu();
+            }
+            // Убрана обработка SwipeDirection.Down
+        }
+
+        private async void OnRefreshButtonClicked(object sender, EventArgs e)
+        {
+            if (!_isLoading)
+            {
+                await RefreshNews();
             }
         }
 
-        private async void RefreshNews()
+        private async Task RefreshNews()
         {
             try
             {
                 SetLoadingState(true);
 
-                // Проверка интернета и загрузка новостей при обновлении
                 if (Connectivity.NetworkAccess != NetworkAccess.Internet)
                 {
                     Dispatcher.Dispatch(() =>
