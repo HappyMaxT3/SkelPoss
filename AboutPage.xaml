@@ -79,6 +79,7 @@
                            HorizontalTextAlignment="Center"
                            Width="600"
                            LineBreakMode="WordWrap"/>
+                    <BoxView HeightRequest="50" Color="#1B1818"/>
                 </VerticalStackLayout>
             </VerticalStackLayout>
         </ScrollView>

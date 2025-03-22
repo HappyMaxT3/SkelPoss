@@ -29,7 +29,7 @@ public class AboutViewModel : ContentPage
         {
             Photo = "max_photo.jpg",
             Name = "Макс Гослинг",
-            Role = "Team Lead / .Net MAUI Developer"
+            Role = "Team Lead / .NET Developer"
         });
 
         Developers.Add(new Developer
