@@ -241,7 +241,7 @@ namespace TechnoPoss
                             BackgroundColor = Colors.Transparent,
                             Content = new Image
                             {
-                                Source = ImageSource.FromFile("long_black.jpg"),
+                                Source = ImageSource.FromFile("no_internet_oposs.jpg"),
                                 Aspect = Aspect.AspectFill,
                                 HeightRequest = 200,
                                 HorizontalOptions = LayoutOptions.Fill,
