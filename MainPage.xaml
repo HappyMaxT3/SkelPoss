@@ -1,4 +1,5 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TechnoPoss"
              xmlns:viewModels="clr-namespace:TechnoPoss.ViewModels"
@@ -18,13 +19,13 @@
                 <!-- Заголовок -->
                 <VerticalStackLayout Grid.Row="0"
                                      Margin="10,10">
-                                    <Label Text="Chat" 
-                                           FontSize="24" 
-                                           FontAttributes="Bold" 
-                                           TextColor="White"/>
-                                    <Label Text="🔎 Looking for techs..." 
-                                           TextColor="#A0A0A0"
-                                           FontSize="14"/>
+                    <Label Text="Chat" 
+                           FontSize="24" 
+                           FontAttributes="Bold" 
+                           TextColor="White"/>
+                    <Label Text="🔎 Looking for techs..." 
+                           TextColor="#A0A0A0"
+                           FontSize="14"/>
                 </VerticalStackLayout>
 
                 <!-- Список сообщений -->
@@ -43,6 +44,12 @@
                                         StrokeThickness="0"
                                         Margin="8,8,8,0"
                                         IsVisible="{Binding IsUserMessage}">
+                                    <Border.Shadow>
+                                        <Shadow Brush="#000000"
+                                                Offset="2,2"
+                                                Radius="10"
+                                                Opacity="0.5"/>
+                                    </Border.Shadow>
                                     <Grid>
                                         <Label Text="{Binding Text}" 
                                                TextColor="White" 
@@ -81,6 +88,12 @@
                                             BackgroundColor="#343434"
                                             StrokeShape="RoundRectangle 15"
                                             StrokeThickness="0">
+                                        <Border.Shadow>
+                                            <Shadow Brush="#000000"
+                                                    Offset="2,2"
+                                                    Radius="10"
+                                                    Opacity="0.5"/>
+                                        </Border.Shadow>
                                         <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,Auto">
                                             <!-- Текст сообщения -->
                                             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
@@ -128,9 +141,9 @@
                     Padding="5">
                 <Border.Shadow>
                     <Shadow Brush="#000000"
-                    Offset="2,2"
-                    Radius="10"
-                    Opacity="0.5"/>
+                            Offset="2,2"
+                            Radius="10"
+                            Opacity="0.5"/>
                 </Border.Shadow>
                 <Editor x:Name="MessageEntry" 
                         Placeholder="Message..." 
@@ -151,7 +164,6 @@
                     CornerRadius="25"
                     WidthRequest="50"
                     HeightRequest="50"/>
-            
 
             <Button Grid.Column="2"
                     Text="{Binding IsRecording, Converter={StaticResource BoolToMicTextConverter}, FallbackValue='🎙'}"
