@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TechnoPoss.Services;
@@ -17,7 +18,9 @@ namespace TechnoPoss.ViewModels
         private readonly IAudioRecorder _audioRecorder;
         private readonly IAudioPlayer _audioPlayer;
         private readonly HttpClient _httpClient;
+
         private readonly string _baseUrl = "http://193.233.48.232:8000"; // сервачок
+
 
         public ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
@@ -59,11 +62,12 @@ namespace TechnoPoss.ViewModels
 
             try
             {
-                var json = JsonSerializer.Serialize(new
-                {
+                // Отправляем JSON в формате {'message': 'text'}
+                var requestData = new {
                     userId = "12345",
                     message = userMessage.Text
-                });
+                };
+                var json = JsonSerializer.Serialize(requestData);
 
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync($"{_baseUrl}/chat/text", content);
@@ -77,11 +81,10 @@ namespace TechnoPoss.ViewModels
                         var serverMessage = new Message
                         {
                             IsUserMessage = false,
-                            Text = serverResponse.Text,
+                            Text = serverResponse.Message,
                             IsAudio = !string.IsNullOrEmpty(serverResponse.Audio)
                         };
 
-                        // Если сервер вернул URL аудио, сохраняем его как путь для последующей загрузки
                         if (serverMessage.IsAudio)
                         {
                             serverMessage.AudioFilePath = serverResponse.Audio;
@@ -159,11 +162,10 @@ namespace TechnoPoss.ViewModels
                         var serverMessage = new Message
                         {
                             IsUserMessage = false,
-                            Text = serverResponse.Text,
+                            Text = serverResponse.Message,
                             IsAudio = !string.IsNullOrEmpty(serverResponse.Audio)
                         };
 
-                        // Если сервер вернул URL аудио, сохраняем его как путь для последующей загрузки
                         if (serverMessage.IsAudio)
                         {
                             serverMessage.AudioFilePath = serverResponse.Audio;
@@ -214,7 +216,6 @@ namespace TechnoPoss.ViewModels
                 }
 
                 string localPath = filePath;
-                // Если filePath — это URL (начинается с http), загружаем файл
                 if (filePath.StartsWith("http"))
                 {
                     localPath = await DownloadAudioAsync(filePath);
@@ -241,7 +242,10 @@ namespace TechnoPoss.ViewModels
 
     public class ServerResponse
     {
-        public string Text { get; set; } = string.Empty;
+        [JsonPropertyName("message")]
+        public string Message { get; set; } = string.Empty;
+
+        [JsonPropertyName("audio")]
         public string Audio { get; set; } = string.Empty;
     }
 }
