@@ -1,4 +1,5 @@
-﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TechnoPoss"
              xmlns:viewModels="clr-namespace:TechnoPoss.ViewModels"
@@ -32,6 +33,49 @@
                                 Grid.Row="1"
                                 ItemsSource="{Binding Messages}"
                                 Margin="0,15,0,20">
+
+                    <CollectionView.Header>
+                        <Grid HorizontalOptions="Start"
+                              ColumnDefinitions="Auto,*"
+                              ColumnSpacing="8"
+                              Margin="8,8,8,0">
+                            <Image Source="profile_oposs.jpg"
+                                   Grid.Column="0"
+                                   WidthRequest="40"
+                                   HeightRequest="40"
+                                   Aspect="AspectFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Center="20,20" RadiusX="20" RadiusY="20"/>
+                                </Image.Clip>
+                            </Image>
+
+                            <Border Grid.Column="1"
+                                    Padding="0"
+                                    BackgroundColor="#343434"
+                                    StrokeShape="RoundRectangle 15"
+                                    StrokeThickness="0"
+                                    HorizontalOptions="Fill">
+                                <Border.Shadow>
+                                    <Shadow Brush="#000000"
+                                            Offset="2,2"
+                                            Radius="10"
+                                            Opacity="0.5"/>
+                                </Border.Shadow>
+                                <Image Source="long_hello_oposs.jpg"
+                                       Aspect="AspectFill"
+                                       HorizontalOptions="Fill"
+                                       VerticalOptions="Fill"
+                                       MaximumWidthRequest="{OnPlatform Default=400, Android=270, iOS=270}"
+                                       MaximumHeightRequest="{OnPlatform Default=300, Android=270, iOS=270}">
+                                    <Image.Clip>
+                                        <RoundRectangleGeometry CornerRadius="15"
+                                            Rect="0,0,600,300"/>
+                                    </Image.Clip>
+                                </Image>
+                            </Border>
+                        </Grid>
+                    </CollectionView.Header>
+
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:Message">
                             <Grid RowDefinitions="Auto" Margin="0,10,0,0">
@@ -41,8 +85,14 @@
                                         HorizontalOptions="End"
                                         StrokeShape="RoundRectangle 15"
                                         StrokeThickness="0"
-                                        Margin="8,0,8,0"
+                                        Margin="8,8,8,0"
                                         IsVisible="{Binding IsUserMessage}">
+                                    <Border.Shadow>
+                                        <Shadow Brush="#000000"
+                                                Offset="2,2"
+                                                Radius="10"
+                                                Opacity="0.5"/>
+                                    </Border.Shadow>
                                     <Grid>
                                         <Label Text="{Binding Text}" 
                                                TextColor="White" 
@@ -65,7 +115,7 @@
                                       IsVisible="{Binding IsUserMessage, Converter={StaticResource InverseBoolConverter}}"
                                       ColumnDefinitions="Auto,*"
                                       ColumnSpacing="8"
-                                      Margin="8,0,8,0">
+                                      Margin="8,8,8,0">
                                     <Image Source="profile_oposs.jpg"
                                            Grid.Column="0"
                                            WidthRequest="40"
@@ -81,12 +131,18 @@
                                             BackgroundColor="#343434"
                                             StrokeShape="RoundRectangle 15"
                                             StrokeThickness="0">
+                                        <Border.Shadow>
+                                            <Shadow Brush="#000000"
+                                                    Offset="2,2"
+                                                    Radius="10"
+                                                    Opacity="0.5"/>
+                                        </Border.Shadow>
                                         <Grid RowDefinitions="*,Auto" ColumnDefinitions="*,Auto">
                                             <!-- Текст сообщения -->
                                             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                                                    Text="{Binding Text}" 
                                                    TextColor="White"
-                                                   MaximumWidthRequest="{OnPlatform Default=500, Android=270, iOS=270}"  
+                                                   MaximumWidthRequest="{OnPlatform Default=600, Android=270, iOS=270}"  
                                                    LineBreakMode="WordWrap"/>
                                             <!-- Кнопка Play -->
                                             <Button Grid.Row="1" Grid.Column="1"
@@ -96,9 +152,9 @@
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainViewModel}}, Path=PlayAudioCommand}"
                                                     CommandParameter="{Binding AudioFilePath}"
                                                     BackgroundColor="Transparent"
-                                                    TextColor="#A0A0A0"
-                                                    WidthRequest="15"
-                                                    HeightRequest="15"
+                                                    TextColor="White"
+                                                    WidthRequest="30"
+                                                    HeightRequest="30"
                                                     HorizontalOptions="End"
                                                     VerticalOptions="End"/>
                                         </Grid>
@@ -122,14 +178,25 @@
               BackgroundColor="#1B1818"
               RowSpacing="10"
               ColumnSpacing="10">
-            <Entry x:Name="MessageEntry" 
-                   Placeholder="Message..." 
-                   TextColor="White" 
-                   BackgroundColor="#343434"
-                   Text="{Binding MessageText, Mode=TwoWay}"
-                   ClearButtonVisibility="WhileEditing"
-                   FontSize="14"
-                   HeightRequest="50"/>
+            <Border StrokeShape="RoundRectangle 15"
+                    Stroke="#343434"
+                    BackgroundColor="#343434"
+                    Padding="5">
+                <Border.Shadow>
+                    <Shadow Brush="#000000"
+                            Offset="2,2"
+                            Radius="10"
+                            Opacity="0.5"/>
+                </Border.Shadow>
+                <Editor x:Name="MessageEntry" 
+                        Placeholder="Message..." 
+                        TextColor="White" 
+                        BackgroundColor="Transparent"
+                        Text="{Binding MessageText, Mode=TwoWay}"
+                        FontSize="14"
+                        AutoSize="TextChanges"
+                        MinimumHeightRequest="40"/>
+            </Border>
 
             <Button Grid.Column="1"
                     Text="➜"

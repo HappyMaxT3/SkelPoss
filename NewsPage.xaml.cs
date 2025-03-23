@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Networking;
 using TechnoPoss.Services;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ namespace TechnoPoss
     public partial class NewsPage : ContentPage
     {
         private const int PageSize = 3;
+        private const int MaxNewsCards = 40;
         private int _currentPage = 0;
         private List<NewsItem> _allNews = new();
         private bool _isLoading;
@@ -42,7 +44,17 @@ namespace TechnoPoss
                         try
                         {
                             await Task.Delay(loadDelay);
-                            DisplayNewsPage();
+
+                            int currentCardCount = NewsContainer.Children.Count - 2;
+                            if (currentCardCount >= MaxNewsCards)
+                            {
+                                await MainScroll.ScrollToAsync(0, 0, true);
+                                await RefreshNews();
+                            }
+                            else
+                            {
+                                DisplayNewsPage();
+                            }
                         }
                         finally
                         {
@@ -58,8 +70,43 @@ namespace TechnoPoss
             try
             {
                 SetLoadingState(true);
-                _allNews = await _newsParser.ParseNewsAsync();
-                ResetNewsView();
+
+                if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+                {
+                    Dispatcher.Dispatch(() =>
+                    {
+                        NewsContainer.Children.Clear();
+                        NewsContainer.Children.Add(CreateNoInternetCard());
+                    });
+                }
+                else
+                {
+                    try
+                    {
+                        var newsItems = await _newsParser.ParseNewsAsync();
+                        if (newsItems == null || newsItems.Count == 0)
+                        {
+                            Dispatcher.Dispatch(() =>
+                            {
+                                NewsContainer.Children.Clear();
+                                NewsContainer.Children.Add(CreateNoInternetCard());
+                            });
+                        }
+                        else
+                        {
+                            _allNews = newsItems;
+                            ResetNewsView();
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Dispatcher.Dispatch(() =>
+                        {
+                            NewsContainer.Children.Clear();
+                            NewsContainer.Children.Add(CreateNoInternetCard());
+                        });
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -75,7 +122,10 @@ namespace TechnoPoss
         {
             Dispatcher.Dispatch(() =>
             {
-                NewsContainer.Children.Clear();
+                while (NewsContainer.Children.Count > 2)
+                {
+                    NewsContainer.Children.RemoveAt(2);
+                }
                 _currentPage = 0;
                 DisplayNewsPage();
             });
@@ -111,62 +161,130 @@ namespace TechnoPoss
                 {
                     Spacing = 8,
                     Children =
-            {
-                new Frame
-                {
-                    CornerRadius = 10,
-                    IsClippedToBounds = true,
-                    Padding = 0,
-                    Margin = 0,
-                    BorderColor = Colors.Transparent,
-                    BackgroundColor = Colors.Transparent,
-                    Content = new Image
                     {
-                        Source = imageSource,
-                        Aspect = Aspect.AspectFill,
-                        HeightRequest = 200,
-                        HorizontalOptions = LayoutOptions.Fill,
-                        Margin = 0,
-                        IsVisible = imageSource != null
+                        new Frame
+                        {
+                            CornerRadius = 10,
+                            IsClippedToBounds = true,
+                            Padding = 0,
+                            Margin = 0,
+                            BorderColor = Colors.Transparent,
+                            BackgroundColor = Colors.Transparent,
+                            Content = new Image
+                            {
+                                Source = imageSource,
+                                Aspect = Aspect.AspectFill,
+                                HeightRequest = 200,
+                                HorizontalOptions = LayoutOptions.Fill,
+                                Margin = 0,
+                                IsVisible = imageSource != null
+                            }
+                        },
+                        new Label
+                        {
+                            Text = $"🔗 {item.Source}",
+                            FontSize = 12,
+                            TextColor = Color.FromArgb(item.SourceColor),
+                            HorizontalOptions = LayoutOptions.Start
+                        },
+                        new Label
+                        {
+                            Text = item.Title,
+                            FontSize = 18,
+                            FontAttributes = FontAttributes.Bold,
+                            TextColor = Colors.White,
+                            MaxLines = 6
+                        },
+                        new Label
+                        {
+                            Text = item.Content,
+                            FontSize = 14,
+                            TextColor = Color.FromArgb("#CCCCCC"),
+                            MaxLines = 9
+                        },
+                        new Button
+                        {
+                            Text = "Читать →",
+                            TextColor = Colors.White,
+                            BackgroundColor = Color.FromArgb("#2D2D2D"),
+                            CornerRadius = 6,
+                            Padding = new Thickness(12, 6),
+                            HorizontalOptions = LayoutOptions.End,
+                            Command = new Command(async () => await OpenUrl(item.Url))
+                        }
                     }
-                },
-                new Label
-                {
-                    Text = $"🔗 {item.Source}",
-                    FontSize = 12,
-                    TextColor = Color.FromArgb(item.SourceColor),
-                    HorizontalOptions = LayoutOptions.Start
-                },
-                new Label
-                {
-                    Text = item.Title,
-                    FontSize = 18,
-                    FontAttributes = FontAttributes.Bold,
-                    TextColor = Colors.White,
-                    MaxLines = 6
-                },
-                new Label
-                {
-                    Text = item.Content,
-                    FontSize = 14,
-                    TextColor = Color.FromArgb("#CCCCCC"),
-                    MaxLines = 9
-                },
-                new Button
-                {
-                    Text = "Читать →",
-                    TextColor = Colors.White,
-                    BackgroundColor = Color.FromArgb("#2D2D2D"),
-                    CornerRadius = 6,
-                    Padding = new Thickness(12, 6),
-                    HorizontalOptions = LayoutOptions.End,
-                    Command = new Command(async () => await OpenUrl(item.Url))
-                }
-            }
                 }
             };
 
+            if (DeviceInfo.Platform == DevicePlatform.WinUI || DeviceInfo.Platform == DevicePlatform.macOS)
+            {
+                newsCard.MaximumWidthRequest = 650;
+                newsCard.HorizontalOptions = LayoutOptions.Center;
+            }
+
             NewsContainer.Children.Add(newsCard);
+        }
+
+        private Frame CreateNoInternetCard()
+        {
+            var noInternetCard = new Frame
+            {
+                BorderColor = Colors.Transparent,
+                BackgroundColor = Color.FromArgb("#2D2D2D"),
+                Padding = 15,
+                CornerRadius = 12,
+                HasShadow = true,
+                MaximumWidthRequest = (DeviceInfo.Platform == DevicePlatform.WinUI || DeviceInfo.Platform == DevicePlatform.macOS) ? 600 : double.PositiveInfinity,
+                HorizontalOptions = LayoutOptions.Center,
+                Content = new VerticalStackLayout
+                {
+                    Spacing = 8,
+                    Children =
+                    {
+                        new Frame
+                        {
+                            CornerRadius = 10,
+                            IsClippedToBounds = true,
+                            Padding = 0,
+                            Margin = 0,
+                            BorderColor = Colors.Transparent,
+                            BackgroundColor = Colors.Transparent,
+                            Content = new Image
+                            {
+                                Source = ImageSource.FromFile("no_internet_oposs.jpg"),
+                                Aspect = Aspect.AspectFill,
+                                HeightRequest = 200,
+                                HorizontalOptions = LayoutOptions.Fill,
+                                Margin = 0
+                            }
+                        },
+                        new Label
+                        {
+                            Text = "🔴 No internet",
+                            FontSize = 12,
+                            TextColor = Colors.Red,
+                            HorizontalOptions = LayoutOptions.Start
+                        },
+                        new Label
+                        {
+                            Text = "Нет подключения к интернету",
+                            FontSize = 18,
+                            FontAttributes = FontAttributes.Bold,
+                            TextColor = Colors.White,
+                            MaxLines = 6
+                        },
+                        new Label
+                        {
+                            Text = "Проверьте подключение и попробуйте снова. Перезагрузите страницу.",
+                            FontSize = 14,
+                            TextColor = Color.FromArgb("#CCCCCC"),
+                            MaxLines = 9
+                        }
+                    }
+                }
+            };
+
+            return noInternetCard;
         }
 
         private ImageSource GetImageSource(string imageUrl)
@@ -213,25 +331,79 @@ namespace TechnoPoss
 
         private void OnSwiped(object sender, SwipedEventArgs e)
         {
-            switch (e.Direction)
+            if (e.Direction == SwipeDirection.Right)
             {
-                case SwipeDirection.Down:
-                    if (!_isLoading)
-                        RefreshNews();
-                    break;
-                case SwipeDirection.Right:
-                    OpenSideMenu();
-                    break;
+                OpenSideMenu();
             }
         }
 
-        private async void RefreshNews()
+        private async void OnRefreshButtonClicked(object sender, EventArgs e)
+        {
+            if (!_isLoading)
+            {
+                await RefreshNews();
+            }
+        }
+
+        private async Task RefreshNews()
         {
             try
             {
                 SetLoadingState(true);
-                _allNews = await _newsParser.ParseNewsAsync();
-                ResetNewsView();
+
+                if (Connectivity.NetworkAccess != NetworkAccess.Internet)
+                {
+                    Dispatcher.Dispatch(() =>
+                    {
+                        if (NewsContainer.Children.Count <= 2 ||
+                            !(NewsContainer.Children.Last() is Frame frame && frame.Content is VerticalStackLayout stack && stack.Children.Any(c => c is Label lbl && lbl.Text == "Нет подключения к интернету")))
+                        {
+                            NewsContainer.Children.Clear();
+                            NewsContainer.Children.Add(CreateNoInternetCard());
+                        }
+                    });
+                }
+                else
+                {
+                    try
+                    {
+                        var newsItems = await _newsParser.ParseNewsAsync();
+                        if (newsItems == null || newsItems.Count == 0)
+                        {
+                            Dispatcher.Dispatch(() =>
+                            {
+                                if (NewsContainer.Children.Count <= 2 ||
+                                    !(NewsContainer.Children.Last() is Frame frame && frame.Content is VerticalStackLayout stack && stack.Children.Any(c => c is Label lbl && lbl.Text == "Нет подключения к интернету")))
+                                {
+                                    NewsContainer.Children.Clear();
+                                    NewsContainer.Children.Add(CreateNoInternetCard());
+                                }
+                            });
+                        }
+                        else
+                        {
+                            _allNews = newsItems;
+                            Dispatcher.Dispatch(() =>
+                            {
+                                NewsContainer.Children.Clear();
+                                ResetNewsView();
+                            });
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Dispatcher.Dispatch(() =>
+                        {
+                            if (NewsContainer.Children.Count <= 2 ||
+                                !(NewsContainer.Children.Last() is Frame frame && frame.Content is VerticalStackLayout stack && stack.Children.Any(c => c is Label lbl && lbl.Text == "Нет подключения к интернету")))
+                            {
+                                NewsContainer.Children.Clear();
+                                NewsContainer.Children.Add(CreateNoInternetCard());
+                            }
+                        });
+                    }
+                }
+
                 await Task.Delay(500);
             }
             catch (Exception ex)

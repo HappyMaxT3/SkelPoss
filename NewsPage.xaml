@@ -3,36 +3,62 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TechnoPoss.NewsPage"
              BackgroundColor="#1B1818">
-    <ScrollView x:Name="MainScroll">
-        <StackLayout Padding="10">
-            <!-- Жесты свайпа -->
-            <StackLayout.GestureRecognizers>
-                <SwipeGestureRecognizer Direction="Down" Swiped="OnSwiped"/>
-                <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped"/>
-            </StackLayout.GestureRecognizers>
+    
+    <AbsoluteLayout>
 
-            <!-- Заголовок -->
-            <Label Text="News" 
-                   FontSize="24" 
-                   FontAttributes="Bold" 
-                   TextColor="White" />
-            <Label Text="📢 Latest news and articles..." 
-                   TextColor="#A0A0A0" />
+        <ScrollView x:Name="MainScroll"
+                    AbsoluteLayout.LayoutFlags="All"
+                    AbsoluteLayout.LayoutBounds="0,0,1,1">
+            <StackLayout Padding="10">
+                <!-- Жесты свайпа -->
+                <StackLayout.GestureRecognizers>
+                    <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped"/>
+                </StackLayout.GestureRecognizers>
 
-            <!-- Индикатор загрузки -->
-            <ActivityIndicator x:Name="LoadingIndicator"
-                               IsVisible="False"
-                               IsRunning="False"
-                               Color="White"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               HeightRequest="50"
-                               WidthRequest="50"/>
+                <!-- Заголовок -->
+                <Label Text="News" 
+                       FontSize="24" 
+                       FontAttributes="Bold" 
+                       TextColor="White" />
+                <Label Text="📢 Latest news and articles..." 
+                       TextColor="#A0A0A0" />
 
-            <!-- Контейнер для новостей -->
-            <StackLayout x:Name="NewsContainer" 
-                         Spacing="10"
-                         VerticalOptions="Start"/>
-        </StackLayout>
-    </ScrollView>
+                <!-- Индикатор загрузки -->
+                <ActivityIndicator x:Name="LoadingIndicator"
+                                   IsVisible="False"
+                                   IsRunning="False"
+                                   Color="White"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   HeightRequest="50"
+                                   WidthRequest="50"/>
+
+                <!-- Контейнер для новостей -->
+                <StackLayout x:Name="NewsContainer" 
+                             Spacing="10"
+                             VerticalOptions="Start"/>
+            </StackLayout>
+        </ScrollView>
+
+        <!-- Кнопка перезагрузки -->
+        <Button x:Name="RefreshButton"
+                Text="🔄"
+                FontSize="16"
+                TextColor="White"
+                BackgroundColor="#343434"
+                CornerRadius="15"
+                Padding="10"
+                WidthRequest="40"
+                HeightRequest="40"
+                AbsoluteLayout.LayoutFlags="PositionProportional"
+                AbsoluteLayout.LayoutBounds="0.95,0.015,AutoSize,AutoSize"
+                Clicked="OnRefreshButtonClicked">
+            <Button.Shadow>
+                <Shadow Brush="#000000"
+                        Radius="10"
+                        Opacity="0.5"
+                        Offset="3,3"/>
+            </Button.Shadow>
+        </Button>
+    </AbsoluteLayout>
 </ContentPage>

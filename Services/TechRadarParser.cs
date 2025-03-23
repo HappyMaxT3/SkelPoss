@@ -9,99 +9,152 @@ namespace TechnoPoss.Services
     public class TechRadarParser
     {
         private const string BaseUrl = "https://www.techradar.com";
-        private readonly HtmlParser _htmlParser = new();
+        private readonly HtmlParser _htmlParser;
+        private readonly Random _random = new();
+        private readonly string[] _placeholderImages = {
+            "long_black.jpg",
+            "long_green.jpg",
+            "long_orange.jpg",
+            "long_pink.jpg",
+            "long_violet.jpg"
+        };
+
+        private readonly string[] _targetSections =
+        {
+            "/news"
+        };
+
+        public TechRadarParser()
+        {
+            _htmlParser = new HtmlParser();
+        }
 
         public async Task<List<NewsItem>> ParseTechRadarNewsAsync(HttpClient httpClient)
         {
+            var result = new List<NewsItem>();
+
             try
             {
-                httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-                httpClient.DefaultRequestHeaders.Referrer = new Uri("https://www.google.com/");
-
-                var response = await httpClient.GetAsync($"{BaseUrl}/home/small-appliances/news");
-                response.EnsureSuccessStatusCode();
-
-                var html = await response.Content.ReadAsStringAsync();
-                return await ParseHtml(html);
+                foreach (var section in _targetSections)
+                {
+                    var response = await httpClient.GetAsync($"{BaseUrl}{section}");
+                    response.EnsureSuccessStatusCode();
+                    var html = await response.Content.ReadAsStringAsync();
+                    result.AddRange(await ParseHtml(html));
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"TechRadar Parser Error: {ex}");
-                return new List<NewsItem>();
+                Console.WriteLine($"Error: {ex}");
             }
+
+            return Shuffle(result.DistinctBy(item => item.Url).ToList());
+        }
+
+        private List<NewsItem> Shuffle(List<NewsItem> list)
+        {
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = _random.Next(i + 1);
+                (list[j], list[i]) = (list[i], list[j]);
+            }
+            return list;
         }
 
         private async Task<List<NewsItem>> ParseHtml(string html)
         {
             var document = await _htmlParser.ParseDocumentAsync(html);
-            var articles = document.QuerySelectorAll("article");
-
-            return articles.Select(article =>
+            var newsContainer = document.QuerySelector(".listingResults.news");
+            if (newsContainer == null)
             {
-                try
-                {
-                    return new NewsItem
-                    {
-                        Source = "TechRadar.com",
-                        SourceColor = "Red",
-                        Title = ExtractTitle(article),
-                        Content = ExtractContent(article),
-                        Url = ExtractUrl(article),
-                        ImageUrl = "img"
-                    };
-                }
-                catch
-                {
-                    return null;
-                }
-            })
-            .Where(item => item != null)
-            .ToList();
+                return new List<NewsItem>();
+            }
+
+            var articles = newsContainer.QuerySelectorAll("[class^='listingResult small result']");
+
+            return articles.Select(article => new NewsItem
+            {
+                Source = "techradar.com",
+                SourceColor = "#00A1D6",  
+                Title = ExtractTitle(article),
+                Content = ExtractContent(article),
+                Url = ExtractUrl(article),
+                ImageUrl = ExtractImage(article)
+            }).ToList();
+        }
+
+        private string ExtractImage(IElement article)
+        {
+            var imageUrl = article.QuerySelector("img")?
+                .GetAttribute("src")?
+                .Trim();
+
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                return _placeholderImages[_random.Next(_placeholderImages.Length)];
+            }
+
+            if (!imageUrl.StartsWith("http"))
+            {
+                return $"{BaseUrl}{imageUrl}";
+            }
+
+            return imageUrl;
         }
 
         private string ExtractTitle(IElement article)
         {
-            return article.QuerySelector("h2 a")?
-                .TextContent?
-                .Trim() ?? "No title";
+            var articleLink = article.QuerySelector("a.article-link");
+            var title = articleLink?.GetAttribute("aria-label")?.Trim();
+
+            return string.IsNullOrEmpty(title) ? "No title" : title;
         }
 
         private string ExtractContent(IElement article)
         {
-            var content = article.QuerySelector("div.article-excerpt p")?.TextContent
-                        ?? article.QuerySelector(".description")?.TextContent
-                        ?? string.Empty;
+            var searchResult = article.QuerySelector("article.search-result.search-result-news.has-rating");
+            if (searchResult == null)
+                return "Not available";
 
-            return CleanContent(content);
+            var paragraphs = searchResult.QuerySelectorAll("p");
+            if (paragraphs == null || paragraphs.Length < 2)
+            {
+                var synopsis = searchResult.QuerySelector(".synopsis, .description");
+                return ProcessContent(synopsis?.InnerHtml);
+            }
+
+            var descriptionElement = paragraphs.Skip(1).FirstOrDefault();
+            return ProcessContent(descriptionElement?.InnerHtml);
         }
 
         private string ExtractUrl(IElement article)
         {
-            var path = article.QuerySelector("h2 a")?
+            var path = article.QuerySelector("a.article-link")?
                 .GetAttribute("href");
 
-            // Обработка полных URL в некоторых статьях
-            if (path?.StartsWith("http") == true)
-                return path;
-
-            return !string.IsNullOrEmpty(path)
-                ? $"{BaseUrl}{path}"
-                : BaseUrl;
+            return BuildUrl(path);
         }
 
-        private string CleanContent(string content)
+        private string ProcessContent(string? html)
         {
-            if (string.IsNullOrWhiteSpace(content))
-                return "No content available";
+            if (string.IsNullOrWhiteSpace(html))
+                return "Not available";
 
-            // Удаляем специальные символы и HTML-теги
-            var cleaned = Regex.Replace(content,
-                @"\u201c|\u201d|\u2018|\u2019|<[^>]+>|&nbsp;",
-                " ")
+            var text = Regex.Replace(html, "<[^>]+>| ", " ")
                 .Replace("Read more", "")
                 .Trim();
 
-            return WebUtility.HtmlDecode(cleaned);
+            text = WebUtility.HtmlDecode(text);
+
+            return text.Length > 250 ? text[..250] + "..." : text;
+        }
+
+        private string BuildUrl(string? path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return BaseUrl;
+
+            return path.StartsWith("/") ? $"{BaseUrl}{path}" : path;
         }
     }
 }

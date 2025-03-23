@@ -10,7 +10,7 @@ namespace TechnoPoss
         {
             var builder = MauiApp.CreateBuilder();
             builder
-                .UseMauiApp<App>() // Используем App, а не AppShell
+                .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -37,8 +37,9 @@ namespace TechnoPoss
 
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<MainPage>();
-            builder.Services.AddSingleton<NewsPage>(); // Если NewsPage существует
-            builder.Services.AddSingleton<AppShell>(); // Регистрация AppShell
+            builder.Services.AddSingleton<NewsPage>();
+            builder.Services.AddSingleton<AppShell>();
+            builder.Services.AddSingleton<AboutPage>();
 
             return builder.Build();
         }

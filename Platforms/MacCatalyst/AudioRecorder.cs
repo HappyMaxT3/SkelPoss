@@ -28,22 +28,27 @@ namespace TechnoPoss.Platforms.MacCatalyst
                 throw;
             }
 
-#pragma warning disable CS8600 // Подавляем предупреждение, так как Path.Combine не вернет null
             _filePath = Path.Combine(FileSystem.CacheDirectory, $"recording_{Guid.NewGuid()}.m4a");
-#pragma warning restore CS8600
-            var url = NSUrl.FromFilename(_filePath); // _filePath гарантированно не null
+            var url = NSUrl.FromFilename(_filePath);
 
-            _recorder = AVAudioRecorder.Create(url, settings: new AudioSettings
+            NSError? error;
+            _recorder = (AVAudioRecorder?)AVAudioRecorder.Create(url, new AudioSettings
             {
                 Format = AudioFormatType.MPEG4AAC,
                 SampleRate = 44100,
                 NumberChannels = 1
-            }, out NSError error);
+            }, out error);
 
-            if (_recorder == null || error != null)
+            if (error != null)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка создания рекордера: {error?.LocalizedDescription ?? "Неизвестная ошибка"}");
-                throw new Exception(error?.LocalizedDescription ?? "Failed to create AVAudioRecorder");
+                System.Diagnostics.Debug.WriteLine($"Ошибка создания рекордера: {error.LocalizedDescription}");
+                throw new Exception(error.LocalizedDescription);
+            }
+
+            if (_recorder == null)
+            {
+                System.Diagnostics.Debug.WriteLine("Неизвестная ошибка при создании AVAudioRecorder");
+                throw new Exception("Failed to create AVAudioRecorder");
             }
 
             _recorder.PrepareToRecord();
