@@ -7,7 +7,7 @@
 
 		<!-- мак -->
 		<TargetFramework>net8.0-maccatalyst</TargetFramework>
-		<TargetFrameworks>net8.0-android;net8.0-ios;net8.0-maccatalyst;</TargetFrameworks>
+		<TargetFrameworks>net8.0-ios;net8.0-maccatalyst;</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks>
 
 
@@ -43,10 +43,10 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+	<!-- <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
 		<MtouchSimulator>true</MtouchSimulator>
 		<RuntimeIdentifier>iossimulator-arm64</RuntimeIdentifier>
-	</PropertyGroup>
+	</PropertyGroup> -->
 
 	<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
 		<RuntimeIdentifiers Condition="'$(Configuration)' == 'Debug'">maccatalyst-arm64</RuntimeIdentifiers>

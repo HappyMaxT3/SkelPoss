@@ -20,11 +20,18 @@ namespace TechnoPoss.Platforms.iOS
 
             var audioSession = AVAudioSession.SharedInstance();
             NSError? error;
-            audioSession.SetCategory(AVAudioSession.CategoryRecord, out error);
+
+            audioSession.SetCategory(
+                AVAudioSessionCategory.Record,
+                0,
+                out error
+            );
+
             if (error != null)
             {
                 throw new Exception($"Ошибка настройки аудиосессии: {error.LocalizedDescription}");
             }
+
             audioSession.SetActive(true, out error);
             if (error != null)
             {
@@ -43,6 +50,7 @@ namespace TechnoPoss.Platforms.iOS
 
             var url = NSUrl.FromFilename(_filePath);
             _recorder = AVAudioRecorder.Create(url, settings, out error);
+
             if (_recorder == null || error != null)
             {
                 throw new Exception($"Ошибка создания рекордера: {error?.LocalizedDescription ?? "Неизвестная ошибка"}");
@@ -52,6 +60,7 @@ namespace TechnoPoss.Platforms.iOS
             {
                 throw new Exception("Не удалось подготовить рекордер к записи.");
             }
+
             if (!_recorder.Record())
             {
                 throw new Exception("Не удалось начать запись.");
