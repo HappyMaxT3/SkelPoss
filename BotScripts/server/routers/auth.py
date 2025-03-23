@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from ..services.authService import AuthService
-from ..core.database import Database
+from services.authService import AuthService
+from core.database import Database
 from pydantic import BaseModel
 
 

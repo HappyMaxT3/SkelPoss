@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from passlib.context import CryptContext
-from ..core.database import Database
-from ..models.user import User
+from core.database import Database
+from models.user import User
 
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')

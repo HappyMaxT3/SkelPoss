@@ -1,7 +1,7 @@
 import uvicorn  
 from fastapi import FastAPI
-from .routers.auth import router as authRouter
-from .routers.chat import router as chatRouter
+from routers.auth import router as authRouter
+from routers.chat import router as chatRouter
 from common.config.monolithConfig import MonolithConfig
 
 

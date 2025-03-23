@@ -17,7 +17,7 @@ namespace TechnoPoss.ViewModels
         private readonly IAudioRecorder _audioRecorder;
         private readonly IAudioPlayer _audioPlayer;
         private readonly HttpClient _httpClient;
-        private readonly string _baseUrl = "http://host:port"; // сервачок
+        private readonly string _baseUrl = "http://193.233.48.232:8000"; // сервачок
 
         public ObservableCollection<Message> Messages { get; set; } = new ObservableCollection<Message>();
 
@@ -59,7 +59,12 @@ namespace TechnoPoss.ViewModels
 
             try
             {
-                var json = JsonSerializer.Serialize(new { text = userMessage.Text });
+                var json = JsonSerializer.Serialize(new
+                {
+                    userId = "12345",
+                    message = userMessage.Text
+                });
+
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync($"{_baseUrl}/chat/text", content);
 
@@ -136,6 +141,10 @@ namespace TechnoPoss.ViewModels
             try
             {
                 var fileBytes = await File.ReadAllBytesAsync(filePath);
+
+                string userId = "12345";
+                content.Add(new StringContent(userId), "userId")
+                
                 var content = new MultipartFormDataContent();
                 content.Add(new ByteArrayContent(fileBytes), "file", Path.GetFileName(filePath));
 

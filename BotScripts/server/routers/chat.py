@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from ..services.chatService import ChatService
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from services.chatService import ChatService
 from common.interfaces.llmInterface import LLMInterface
 from common.interfaces.sttInterface import STTInterface
 from common.interfaces.ttsInterface import TTSInterface
@@ -8,9 +8,10 @@ from pydantic import BaseModel
 
 router = APIRouter(prefix='/chat', tags=['Chat'])
 
-ALLOWED_MIME_TYPES = {'audio/mpeg', 'audio/wav', 'audio/ogg'}
+ALLOWED_MIME_TYPES = {'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp3'}
 
 class ChatRequest(BaseModel):
+    userId: str
     message: str
 
 
@@ -32,6 +33,7 @@ async def sendTextMessage(
 
 @router.post('/voice', summary='Отправка голосового сообщения')
 async def sendVoiceMessage(
+    userId: str = Form(...),
     file: UploadFile = File(...),
     chatService: ChatService = Depends(getChatService)
 ):
@@ -43,7 +45,7 @@ async def sendVoiceMessage(
     
     try:
         audioData  = await file.read()
-        response = chatService.processVoiceMessage(audioData)
+        response = chatService.processVoiceMessage(userId, audioData)
         return {'response': response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

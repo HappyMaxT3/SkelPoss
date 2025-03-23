@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from ..main import app
+from main import app
 
 
 client = TestClient(app)
@@ -9,7 +9,10 @@ client = TestClient(app)
 def testSendMessage():
     response = client.post(
         '/chat/text',
-        json={"message": "Hello, how are you?"}
+        json={
+            'userId': '12345',
+            'message': 'Hello, how are you?'
+            }
     )
 
     assert response.status_code == 200
@@ -20,7 +23,10 @@ def testSendVoiceMessage():
     with open('testAudio.wav', 'rb') as f:
         response = client.post(
             '/chat/voice',
-            files={'file': ('testAudio.wav', f, 'audio/wav')}
+            files={
+                'userId': '12345',
+                'file': ('testAudio.wav', f, 'audio/wav')
+                }
         )
 
         assert response == 200
