@@ -162,7 +162,7 @@ namespace TechnoPoss.ViewModels
                         var serverMessage = new Message
                         {
                             IsUserMessage = false,
-                            Text = serverResponse.Message,
+                            Text = serverResponse.Response,
                             IsAudio = !string.IsNullOrEmpty(serverResponse.Audio)
                         };
 
