@@ -43,6 +43,9 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>We need microphone access to record audio.</string>
 
+	<key>NSQuitAlwaysKeepsWindows</key>
+	<false/>
+
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 </dict>
