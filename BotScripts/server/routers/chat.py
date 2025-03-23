@@ -25,7 +25,7 @@ async def sendTextMessage(
     chatService: ChatService = Depends(getChatService)
 ):
     try:
-        response = chatService.processTextMessage(request.message)
+        response = chatService.processTextMessage(request.userId, request.message)
         return {'response': response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -243,7 +243,7 @@ namespace TechnoPoss.ViewModels
     public class ServerResponse
     {
         [JsonPropertyName("message")]
-        public string Message { get; set; } = string.Empty;
+        public string Response { get; set; } = string.Empty;
 
         [JsonPropertyName("audio")]
         public string Audio { get; set; } = string.Empty;
