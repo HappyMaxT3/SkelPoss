@@ -81,7 +81,7 @@ namespace TechnoPoss.ViewModels
                         var serverMessage = new Message
                         {
                             IsUserMessage = false,
-                            Text = serverResponse.Message,
+                            Text = serverResponse.Response,
                             IsAudio = !string.IsNullOrEmpty(serverResponse.Audio)
                         };
 
@@ -146,9 +146,9 @@ namespace TechnoPoss.ViewModels
                 var fileBytes = await File.ReadAllBytesAsync(filePath);
 
                 string userId = "12345";
-                content.Add(new StringContent(userId), "userId")
                 
                 var content = new MultipartFormDataContent();
+                content.Add(new StringContent(userId), "userId")
                 content.Add(new ByteArrayContent(fileBytes), "file", Path.GetFileName(filePath));
 
                 var response = await _httpClient.PostAsync($"{_baseUrl}/chat/voice", content);
@@ -242,7 +242,7 @@ namespace TechnoPoss.ViewModels
 
     public class ServerResponse
     {
-        [JsonPropertyName("message")]
+        [JsonPropertyName("response")]
         public string Response { get; set; } = string.Empty;
 
         [JsonPropertyName("audio")]

@@ -46,6 +46,6 @@ async def sendVoiceMessage(
     try:
         audioData  = await file.read()
         response = chatService.processVoiceMessage(userId, audioData)
-        return {'response': response}
+        return {'audio': response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
