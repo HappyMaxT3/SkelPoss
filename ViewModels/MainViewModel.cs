@@ -148,7 +148,7 @@ namespace TechnoPoss.ViewModels
                 string userId = "12345";
                 
                 var content = new MultipartFormDataContent();
-                content.Add(new StringContent(userId), "userId")
+                content.Add(new StringContent(userId), "userId");
                 content.Add(new ByteArrayContent(fileBytes), "file", Path.GetFileName(filePath));
 
                 var response = await _httpClient.PostAsync($"{_baseUrl}/chat/voice", content);
