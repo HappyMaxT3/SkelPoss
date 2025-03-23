@@ -63,7 +63,8 @@ namespace TechnoPoss.ViewModels
             try
             {
                 // Отправляем JSON в формате {'message': 'text'}
-                var requestData = new {
+                var requestData = new
+                {
                     userId = "12345",
                     message = userMessage.Text
                 };
@@ -146,7 +147,7 @@ namespace TechnoPoss.ViewModels
                 var fileBytes = await File.ReadAllBytesAsync(filePath);
 
                 string userId = "12345";
-                
+
                 var content = new MultipartFormDataContent();
                 content.Add(new StringContent(userId), "userId");
                 content.Add(new ByteArrayContent(fileBytes), "file", Path.GetFileName(filePath));
