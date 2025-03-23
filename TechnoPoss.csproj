@@ -40,7 +40,7 @@
 
   <!-- Dependencies -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -56,6 +56,9 @@
     <Compile Update="NewsPage.xaml.cs" DependentUpon="NewsPage.xaml" />
     <MauiXaml Update="AboutPage.xaml" Generator="MSBuild:Compile" />
     <MauiXaml Update="NewsPage.xaml" Generator="MSBuild:Compile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Platforms\Android\Resources\xml\" />
   </ItemGroup>
 
 </Project>
