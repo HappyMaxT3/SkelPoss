@@ -50,10 +50,11 @@
                             </Image>
 
                             <Border Grid.Column="1"
-                                    Padding="12"
+                                    Padding="0"
                                     BackgroundColor="#343434"
                                     StrokeShape="RoundRectangle 15"
-                                    StrokeThickness="0">
+                                    StrokeThickness="0"
+                                    HorizontalOptions="Fill">
                                 <Border.Shadow>
                                     <Shadow Brush="#000000"
                                             Offset="2,2"
@@ -62,9 +63,15 @@
                                 </Border.Shadow>
                                 <Image Source="long_hello_oposs.jpg"
                                        Aspect="AspectFill"
-                                       HeightRequest="200"
-                                       WidthRequest="300"
-                                       HorizontalOptions="Start"/>
+                                       HorizontalOptions="Fill"
+                                       VerticalOptions="Fill"
+                                       MaximumWidthRequest="{OnPlatform Default=400, Android=270, iOS=270}"
+                                       MaximumHeightRequest="{OnPlatform Default=300, Android=270, iOS=270}">
+                                    <Image.Clip>
+                                        <RoundRectangleGeometry CornerRadius="15"
+                                            Rect="0,0,600,300"/>
+                                    </Image.Clip>
+                                </Image>
                             </Border>
                         </Grid>
                     </CollectionView.Header>
